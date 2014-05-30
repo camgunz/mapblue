@@ -15,7 +15,6 @@ import (
 	"os"
 	"path"
 	"regexp"
-	"runtime/pprof"
 	"strconv"
 	"strings"
 	"sync"
@@ -808,7 +807,7 @@ func loadCensusDataTable(dataTable *CensusTable, tableLoaded chan string) {
 		}
 		columnValueSlice := make([]string, len(dataTable.Columns))
 		for ci, column := range dataTable.Columns {
-			if ci < 4 {
+			if ci < 5 {
 				columnValueSlice[ci] = fmt.Sprintf("'%s'", column.Value)
 			} else {
 				columnValueSlice[ci] = column.Value
@@ -846,13 +845,6 @@ func main() {
 	var censusDataFolder string
 	geoLocationDataLoaded := make(chan bool)
 	censusDataLoaded := make(chan bool)
-
-	f, err := os.Create("census.prof")
-	if err != nil {
-		log.Fatalf("Error creating profile file 'census.prof' (%s)", err)
-	}
-	pprof.StartCPUProfile(f)
-	defer pprof.StopCPUProfile()
 
 	// Check for a specified census data folder
 	if len(os.Args) == 1 {
