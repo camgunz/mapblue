@@ -669,7 +669,7 @@ func loadGeoLocationData(geoLocationDataLoaded chan bool) {
 
 	geoLocationQueue := make(chan *GeoLocation, 10)
 	go GetGeoLocations(geoLocationQueue)
-	tx = dbBegin()
+	tx := dbBegin()
 	for geoLocation := range geoLocationQueue {
 		rowValueSlice := make([]string, len(geoLocation.Fields))
 		for fi, field := range geoLocation.Fields {
@@ -759,7 +759,7 @@ func loadCensusDataTable(dataTable *CensusTable, tableLoaded chan string) {
 		)
 	}
 	scanner := bufio.NewScanner(dataTable.DataLocation.DataFile.File)
-	tx = dbBegin()
+	tx := dbBegin()
 	for scanner.Scan() {
 		line := scanner.Text()
 		lineCount++
