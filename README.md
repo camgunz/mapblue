@@ -16,10 +16,21 @@ Mapblue's backend and census data loading program is written in
 [Dart](http://dartlang.org) and employs the Google Maps API.  We use PostgreSQL
 for its excellence and for [PostGIS](http://postgis.net).
 
+**WARNING!!!**
+
+TL;DR: Use Go 1.3, even the betas.
+
+There is a bug in Go 1.2 where `database/sql` ignores calls to
+`SetMaxOpenConns`.  `database/sql` uses connection polling such that every
+query uses a different connection (if possible), and the limit is set by
+`SetMaxOpenConns`.  But, if those calls are ignored, `load_census_data` will
+quickly butt up against PostgreSQL's configured connection limit and the
+program will fail.
+
 Limitations
 ===========
 
-Mapblue is currently a proof-of-concept, and I've therefore restricted the
+Mapblue is currently a proof-of-concept, and we've therefore restricted the
 usable map to Indiana (my home state).  Other than a lack of resources (servers
 with large amounts of fast storage aren't cheap), nothing prevents the other
 states from being added other than a few assumptions made in the census data
