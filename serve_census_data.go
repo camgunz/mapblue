@@ -168,7 +168,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	pg, err := sql.Open(
 		"postgres",
-		"postgres://census:12106n13@localhost/census?sslmode=disable",
+		"host=/var/run/postgresql dbname=census "+
+			"user=census sslmode=disable",
 	)
 	if err != nil {
 		log.Fatal(err)

@@ -344,7 +344,7 @@ func openDB() {
 	db, err := sql.Open(
 		"postgres",
 		"host=/var/run/postgresql dbname=census "+
-			"user=census password=12106n13 sslmode=disable",
+			"user=census sslmode=disable",
 	)
 	if err != nil {
 		log.Fatalf(
@@ -366,6 +366,68 @@ func closeDB() {
 func reopenDB() {
 	closeDB()
 	openDB()
+}
+
+func dbBegin() *sql.Tx {
+	tx, err := DB.Begin()
+
+	if err != nil {
+		log.Fatalf("Error beginning transaction (%s)\n", err)
+	}
+
+	return tx
+}
+
+func dbExec(tx *sql.Tx, query string) {
+	if tx == nil {
+		if _, err := DB.Exec(query); err != nil {
+			log.Fatalf("Query error: %s\nQuery: %s\n", err, query)
+		} else if PRINT_SQL_QUERIES {
+			fmt.Println(query)
+		}
+	} else if _, err := tx.Exec(query); err != nil {
+		if rbErr := tx.Rollback(); rbErr != nil {
+			log.Fatalf("Error rolling back transaction\n"+
+				"Query error: %s\n"+
+				"Rollback error: %s\n"+
+				"Query: %s\n",
+				err, rbErr, query,
+			)
+		} else {
+			log.Fatalf("Query error: %s\nQuery: %s\n", err, query)
+		}
+	} else if PRINT_SQL_QUERIES {
+		fmt.Println(query)
+	}
+}
+
+func dbExecIgnoreError(tx *sql.Tx, query string) {
+	if tx == nil {
+		if _, err := DB.Exec(query); err != nil {
+			log.Printf("Query error: %s\nQuery: %s\n", err, query)
+		} else if PRINT_SQL_QUERIES {
+			fmt.Println(query)
+		}
+	} else if _, err := tx.Exec(query); err != nil {
+		if rbErr := tx.Rollback(); rbErr != nil {
+			log.Fatalf("Error rolling back transaction\n"+
+				"Query error: %s\n"+
+				"Rollback error: %s\n"+
+				"Query: %s\n",
+				err, rbErr, query,
+			)
+		} else {
+			log.Printf("Query error: %s\nQuery: %s\n", err, query)
+		}
+	} else if PRINT_SQL_QUERIES {
+		fmt.Println(query)
+	}
+}
+
+func dbCommit(tx *sql.Tx) {
+	if err := tx.Commit(); err != nil {
+		log.Fatalf("Error committing transaction (%s)\n", err)
+	}
 }
 
 func GetAPIConcepts() map[string]APIConcept {
@@ -595,45 +657,11 @@ func loadGeoLocationData(geoLocationDataLoaded chan bool) {
 	}
 	createGeoLocationsTableQuery += ")"
 
-	if tx, txErr := DB.Begin(); txErr == nil {
-		if _, dtErr := tx.Exec(dropGeoLocationsTableQuery); dtErr == nil {
-			if _, ctErr := tx.Exec(createGeoLocationsTableQuery); ctErr == nil {
-				if err := tx.Commit(); err == nil {
-					log.Println("Created table 'geo_locations'")
-				} else {
-					log.Fatalf("Error committing transaction (%s)\n", err)
-				}
-			} else if rbErr := tx.Rollback(); rbErr == nil {
-				log.Fatalf("Error creating table 'geo_locations'\n"+
-					"Query error: %s\n"+
-					"Query: %s\n",
-					ctErr, createGeoLocationsTableQuery,
-				)
-			} else {
-				log.Fatalf("Error rolling back transaction\n"+
-					"Query error: %s\n"+
-					"Rollback error: %s\n"+
-					"Query: %s\n",
-					ctErr, rbErr, createGeoLocationsTableQuery,
-				)
-			}
-		} else if rbErr := tx.Rollback(); rbErr == nil {
-			log.Printf("Error dropping table 'geo_locations'\n"+
-				"Query error: %s\n"+
-				"Query: %s\n",
-				dtErr, dropGeoLocationsTableQuery,
-			)
-		} else {
-			log.Fatalf("Error rolling back transaction\n"+
-				"Query error: %s\n"+
-				"Rollback error: %s\n"+
-				"Query: %s\n",
-				dtErr, rbErr, dropGeoLocationsTableQuery,
-			)
-		}
-	} else {
-		log.Fatalf("Error beginning transaction (%s)\n", txErr)
-	}
+	tx := dbBegin()
+	dbExecIgnoreError(tx, dropGeoLocationsTableQuery)
+	dbExec(tx, createGeoLocationsTableQuery)
+	dbCommit(tx)
+	log.Println("Created table 'geo_locations'")
 
 	geoTableColumnNameSlice := make([]string, len(GeoLocationFieldDescriptions))
 	for fi, fd := range GeoLocationFieldDescriptions {
@@ -643,10 +671,7 @@ func loadGeoLocationData(geoLocationDataLoaded chan bool) {
 
 	geoLocationQueue := make(chan *GeoLocation, 10)
 	go GetGeoLocations(geoLocationQueue)
-	tx, err := DB.Begin()
-	if err != nil {
-		log.Fatalf("Error beginning transaction (%s)\n", err)
-	}
+	tx = dbBegin()
 	for geoLocation := range geoLocationQueue {
 		rowValueSlice := make([]string, len(geoLocation.Fields))
 		for fi, field := range geoLocation.Fields {
@@ -660,19 +685,9 @@ func loadGeoLocationData(geoLocationDataLoaded chan bool) {
 			"INSERT INTO geo_locations (%s) VALUES (%s)",
 			geoTableColumnNames, strings.Join(rowValueSlice, ", "),
 		)
-		if _, err := tx.Exec(geoLocationQuery); err != nil {
-			log.Fatalf("Error INSERTing geographic location\n"+
-				"Query error: %s\n"+
-				"Query: %s\n",
-				err, geoLocationQuery,
-			)
-		} else if PRINT_SQL_QUERIES {
-			log.Println(geoLocationQuery)
-		}
+		dbExec(tx, geoLocationQuery)
 	}
-	if err = tx.Commit(); err != nil {
-		log.Fatalf("Error committing transaction (%s)\n", err)
-	}
+	dbCommit(tx)
 
 	geoLocationDataLoaded <- true
 }
@@ -716,53 +731,19 @@ func loadCensusDataTable(dataTable *CensusTable, tableLoaded chan string) {
 		)
 	}
 	columnDefinitions := strings.Join(columnDefinitionSlice, ", ")
-	dropTableQuery := fmt.Sprintf("DROP TABLE %s", dataTable.Name)
-	createTableQuery := fmt.Sprintf(
+	dropDataTableQuery := fmt.Sprintf("DROP TABLE %s", dataTable.Name)
+	createDataTableQuery := fmt.Sprintf(
 		"CREATE TABLE %s ("+
 			"id SERIAL PRIMARY KEY, fileid varchar(6), stusab varchar(2), "+
 			"chariter varchar(3), cifsn varchar(3), logrecno varchar(7), %s"+
 			")", dataTable.Name, columnDefinitions,
 	)
 
-	if tx, txErr := DB.Begin(); txErr == nil {
-		if _, dtErr := tx.Exec(dropTableQuery); dtErr == nil {
-			if _, ctErr := tx.Exec(createTableQuery); ctErr == nil {
-				if err := tx.Commit(); err == nil {
-					log.Printf("Created table '%s'\n", dataTable.Name)
-				} else {
-					log.Fatalf("Error committing transaction (%s)\n", err)
-				}
-			} else if rbErr := tx.Rollback(); rbErr == nil {
-				log.Fatalf("Error creating table '%s'\n"+
-					"Query error: %s\n"+
-					"Query: %s\n",
-					dataTable.Name, ctErr, createTableQuery,
-				)
-			} else {
-				log.Fatalf("Error rolling back transaction\n"+
-					"Query error: %s\n"+
-					"Rollback error: %s\n"+
-					"Query: %s\n",
-					ctErr, rbErr, createTableQuery,
-				)
-			}
-		} else if rbErr := tx.Rollback(); rbErr == nil {
-			log.Printf("Error dropping table '%s'\n"+
-				"Query error: %s\n"+
-				"Query: %s\n",
-				dataTable.Name, dtErr, dropTableQuery,
-			)
-		} else {
-			log.Fatalf("Error rolling back transaction\n"+
-				"Query error: %s\n"+
-				"Rollback error: %s\n"+
-				"Query: %s\n",
-				dtErr, rbErr, dropTableQuery,
-			)
-		}
-	} else {
-		log.Fatalf("Error beginning transaction (%s)\n", txErr)
-	}
+	tx := dbBegin()
+	dbExecIgnoreError(tx, dropDataTableQuery)
+	dbExec(tx, createDataTableQuery)
+	dbCommit(tx)
+	log.Printf("Created table '%s'\n", dataTable.Name)
 
 	columnNameSlice := make([]string, len(dataTable.Columns))
 	for ci, column := range dataTable.Columns {
@@ -782,10 +763,7 @@ func loadCensusDataTable(dataTable *CensusTable, tableLoaded chan string) {
 		)
 	}
 	scanner := bufio.NewScanner(dataTable.DataLocation.DataFile.File)
-	tx, err := DB.Begin()
-	if err != nil {
-		log.Fatalf("Error beginning transaction (%s)\n", err)
-	}
+	tx = dbBegin()
 	for scanner.Scan() {
 		line := scanner.Text()
 		lineCount++
@@ -817,20 +795,10 @@ func loadCensusDataTable(dataTable *CensusTable, tableLoaded chan string) {
 			"INSERT INTO %s (%s) VALUES (%s)",
 			dataTable.Name, columnNames, strings.Join(columnValueSlice, ", "),
 		)
-		if _, err := tx.Exec(dataQuery); err != nil {
-			log.Fatalf("Error INSERTing census data into %s\n"+
-				"Query error: %s\n"+
-				"Query: %s\n",
-				dataTable.Name, err, dataQuery,
-			)
-		} else if PRINT_SQL_QUERIES {
-			log.Println(dataQuery)
-		}
+		dbExec(tx, dataQuery)
 		rowCount++
 	}
-	if err = tx.Commit(); err != nil {
-		log.Fatalf("Error committing transaction (%s)\n", err)
-	}
+	dbCommit(tx)
 	if err := scanner.Err(); err != nil {
 		log.Fatalf("Error reading from file %s (%s)\n",
 			dataTable.DataLocation.DataFile.File.Name(), err,
