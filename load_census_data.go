@@ -657,10 +657,8 @@ func loadGeoLocationData(geoLocationDataLoaded chan bool) {
 	}
 	createGeoLocationsTableQuery += ")"
 
-	tx := dbBegin()
-	dbExecIgnoreError(tx, dropGeoLocationsTableQuery)
-	dbExec(tx, createGeoLocationsTableQuery)
-	dbCommit(tx)
+	dbExecIgnoreError(nil, dropGeoLocationsTableQuery)
+	dbExec(nil, createGeoLocationsTableQuery)
 	log.Println("Created table 'geo_locations'")
 
 	geoTableColumnNameSlice := make([]string, len(GeoLocationFieldDescriptions))
@@ -739,10 +737,8 @@ func loadCensusDataTable(dataTable *CensusTable, tableLoaded chan string) {
 			")", dataTable.Name, columnDefinitions,
 	)
 
-	tx := dbBegin()
-	dbExecIgnoreError(tx, dropDataTableQuery)
-	dbExec(tx, createDataTableQuery)
-	dbCommit(tx)
+	dbExecIgnoreError(nil, dropDataTableQuery)
+	dbExec(nil, createDataTableQuery)
 	log.Printf("Created table '%s'\n", dataTable.Name)
 
 	columnNameSlice := make([]string, len(dataTable.Columns))
