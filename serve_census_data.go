@@ -43,49 +43,31 @@ func send500(w http.ResponseWriter, e error) {
 	w.WriteHeader(http.StatusInternalServerError)
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	var lat1, lon1, lat2, lon2 string
+func checkParam(w http.ResponseWriter, r *http.Request, paramName string) {
 	form := r.URL.Query()
-	if _, ok := form["lat1"]; ok {
-		if _, err := strconv.ParseFloat(form["lat1"][0], 64); err != nil {
-			send400(w, "Invalid value for lat1")
+	if _, ok := form[paramName]; ok {
+		if _, err := strconv.ParseFloat(form[paramName][0], 64); err != nil {
+			send400(w, fmt.Sprintf("Invalid value for %s", paramName))
 			return
 		}
-		lat1 = form["lat1"][0]
 	} else {
-		send400(w, "Required parameter 'lat1' not given")
+		send400(w, fmt.Sprintf("Required parameter '%s' not given", paramName))
 		return
 	}
-	if _, ok := form["lon1"]; ok {
-		if _, err := strconv.ParseFloat(form["lon1"][0], 64); err != nil {
-			send400(w, "Invalid value for lon1")
-			return
-		}
-		lon1 = form["lon1"][0]
-	} else {
-		send400(w, "Required parameter 'lon1' not given")
-		return
-	}
-	if _, ok := form["lat2"]; ok {
-		if _, err := strconv.ParseFloat(form["lat2"][0], 64); err != nil {
-			send400(w, "Invalid value for lat2")
-			return
-		}
-		lat2 = form["lat2"][0]
-	} else {
-		send400(w, "Required parameter 'lat2' not given")
-		return
-	}
-	if _, ok := form["lon2"]; ok {
-		if _, err := strconv.ParseFloat(form["lon2"][0], 64); err != nil {
-			send400(w, "Invalid value for lon2")
-			return
-		}
-		lon2 = form["lon2"][0]
-	} else {
-		send400(w, "Required parameter 'lon2' not given")
-		return
-	}
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	form := r.URL.Query()
+
+	checkParam(w, r, "lat1")
+	checkParam(w, r, "lon1")
+	checkParam(w, r, "lat2")
+	checkParam(w, r, "lon2")
+
+	lat1 := form["lat1"][0]
+	lon1 := form["lon1"][0]
+	lat2 := form["lat2"][0]
+	lon2 := form["lon2"][0]
 
 	censusBlocks := CensusBlocks{}
 	censusBlocks.Blocks = make([]CensusBlock, blockChunkSize)
