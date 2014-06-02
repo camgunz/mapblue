@@ -32,3 +32,10 @@ wget $INDIANAURL && unzip in2010.sf1.zip && rm in2010.sf1.zip
 #     psql -d census -c "GRANT SELECT ON ALL TABLES IN SCHEMA $schema TO census;"
 # done
 
+## Create indices
+# CREATE UNIQUE INDEX idx_p5_logrecno ON p5 (logrecno);
+# CREATE UNIQUE INDEX idx_p19_logrecno ON p19 (logrecno);
+# CREATE INDEX idx_geo_locations_intptlat ON geo_locations (intptlat);
+# CREATE INDEX idx_geo_locations_intptlon ON geo_locations (intptlon);
+# CREATE UNIQUE INDEX idx_tabblock_intptlat ON tabblock (intptlat);
+# CREATE UNIQUE INDEX idx_tabblock_intptlon ON tabblock (intptlon);

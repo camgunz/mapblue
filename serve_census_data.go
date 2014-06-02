@@ -13,9 +13,15 @@ import (
 var db *sql.DB
 
 type CensusBlock struct {
-	ID          string
-	Name        string
-	Coordinates string
+	Name                string
+	Coordinates         string
+	RacePopulation      int
+	BlackCount          int
+	HispanicCount       int
+	OtherRaceCount      int
+	HouseholdPopulation int
+	UnmarriedCount      int
+	ChildlessCount      int
 }
 
 type CensusBlocks struct {
@@ -26,10 +32,27 @@ func (cb *CensusBlock) MarshalJSON() ([]byte, error) {
 	return []byte(cb.Coordinates), nil
 }
 
+/*
 const blockQueryTemplate = "SELECT tabblock_id, name, ST_AsGeoJSON(the_geom) " +
 	"FROM tabblock WHERE ST_Intersects(the_geom, ST_GeometryFromText(" +
 	"'SRID=4269;MULTIPOLYGON(((%s %s, %s %s, %s %s, %s %s, %s %s)))'" +
 	"));"
+*/
+
+const blockQueryTemplate = "SELECT tb.name, ST_AsGeoJSON(tb.the_geom), " +
+	"p5.p0050001, p5.p0050004, p5.p0050005, p5.p0050006, " +
+	"p5.p0050007, p5.p0050008, p5.p0050009, p5.p0050010, " +
+	"p19.p0190001, p19.p0190002, p19.p0190009, p19.p0190010, " +
+	"p19.p0190012, p19.p0190013, p19.p0190015, p19.p0190016, " +
+	"p19.p0190017 " +
+	"FROM tabblock AS tb, geo_locations as gl, p5 as p5, p19 as p19 " +
+	"WHERE ST_Intersects(the_geom, ST_GeomFromEWKT(" +
+	"'SRID=4269;MULTIPOLYGON(((%s %s, %s %s, %s %s, %s %s, %s %s)))'" +
+	")) " +
+	"AND gl.intptlon = tb.intptlon " +
+	"AND gl.intptlat = tb.intptlat " +
+	"AND p5.logrecno = gl.logrecno " +
+	"AND p19.logrecno = gl.logrecno;"
 
 const blockChunkSize = 3000
 
@@ -80,16 +103,46 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	for blockRows.Next() {
+		var name, coordinates string
+		var racePop, blackCount, aianCount, asianCount, nhopiCount int
+		var otherRaceCount, multiracialCount, hispanicCount int
+		var householdPop, singleNoFamilyCount, husbandAndWifeChildlessCount int
+		var unmarriedWithFamilyCount, singleDadCount int
+		var unmarriedMaleFamilyCount, singleMomCount int
+		var unmarriedFemaleFamilyCount, nonFamilyCount int
+
 		if blockCount > len(censusBlocks.Blocks) {
 			newBlocks := make([]CensusBlock, len(censusBlocks.Blocks)+blockChunkSize)
 			copy(newBlocks, censusBlocks.Blocks)
 			censusBlocks.Blocks = newBlocks
 		}
 		block := &censusBlocks.Blocks[blockCount]
-		err = blockRows.Scan(&block.ID, &block.Name, &block.Coordinates)
+		err = blockRows.Scan(
+			&name, &coordinates,
+			&racePop,
+			&blackCount, &aianCount, &asianCount, &nhopiCount,
+			&otherRaceCount, &multiracialCount, &hispanicCount,
+			&householdPop,
+			&singleNoFamilyCount, &husbandAndWifeChildlessCount,
+			&unmarriedWithFamilyCount,
+			&singleDadCount, &unmarriedMaleFamilyCount,
+			&singleMomCount, &unmarriedFemaleFamilyCount,
+			&nonFamilyCount,
+		)
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		block.Name = name
+		block.Coordinates = coordinates
+		block.RacePopulation = racePop
+		block.BlackCount = blackCount
+		block.HispanicCount = hispanicCount
+		block.OtherRaceCount = aianCount + asianCount + nhopiCount +
+			otherRaceCount + multiracialCount
+		block.HouseholdPopulation = householdPop
+		block.UnmarriedCount = singleNoFamilyCount +
+			unmarriedWithFamilyCount + nonFamilyCount
 		blockCount++
 	}
 	if err = blockRows.Err(); err != nil {
