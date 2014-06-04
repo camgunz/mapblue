@@ -3,17 +3,22 @@
 CENSUSURL="http://www2.census.gov/census_2010/04-Summary_File_1"
 INDIANAURL="$CENSUSURL/Indiana/in2010.sf1.zip"
 
+## Create the database
 psql -c "DROP DATABASE census;"
 psql -c "CREATE DATABASE census WITH OWNER census;"
 
+## Install PostGIS extensions
 psql -d census -c "CREATE EXTENSION postgis;"
 psql -d census -c "CREATE EXTENSION fuzzystrmatch;"
 psql -d census -c "CREATE EXTENSION postgis_tiger_geocoder;"
 psql -d census -c "CREATE EXTENSION postgis_topology;"
+
+## Generate the loader script
 psql -A -t -d census -c \
     "SELECT loader_generate_script(ARRAY['IN'], 'sh');" > \
     load_indiana_tiger_data.sh
 
+## Download census data files
 wget $INDIANAURL && unzip in2010.sf1.zip && rm in2010.sf1.zip
 
 ## Patch load_indiana_tiger_data.sh here
@@ -25,17 +30,3 @@ wget $INDIANAURL && unzip in2010.sf1.zip && rm in2010.sf1.zip
 ## Load Census data
 # dtach -n load_census_data.sock ./load_census_data
 
-## Set schema permissions properly
-# for schema in public tiger topology
-# do
-#     psql -d "GRANT USAGE ON SCHEMA $schema TO census;"
-#     psql -d census -c "GRANT SELECT ON ALL TABLES IN SCHEMA $schema TO census;"
-# done
-
-## Create indices
-# CREATE UNIQUE INDEX idx_p5_logrecno ON p5 (logrecno);
-# CREATE UNIQUE INDEX idx_p19_logrecno ON p19 (logrecno);
-# CREATE INDEX idx_geo_locations_intptlat ON geo_locations (intptlat);
-# CREATE INDEX idx_geo_locations_intptlon ON geo_locations (intptlon);
-# CREATE UNIQUE INDEX idx_tabblock_intptlat ON tabblock (intptlat);
-# CREATE UNIQUE INDEX idx_tabblock_intptlon ON tabblock (intptlon);
