@@ -140,7 +140,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 		block := &censusBlocks.Blocks[blockCount]
 		block.Name = name
-		block.Coordinates = geoJSON.(map[string]interface{})
+		block.Geometry = geoJSON.(map[string]interface{})
 		block.Over18 = over18
 		block.Black = blacks
 		block.Hispanic = hispanics
