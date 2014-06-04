@@ -13,14 +13,14 @@ import (
 var db *sql.DB
 
 type CensusBlock struct {
-	Name        string
-	Coordinates map[string]interface{}
-	Over18      int
-	Black       int
-	Hispanic    int
-	OtherRace   int
-	Unmarried   int
-	Childless   int
+	Name      string
+	Geometry  map[string]interface{}
+	Over18    int
+	Black     int
+	Hispanic  int
+	OtherRace int
+	Unmarried int
+	Childless int
 }
 
 type CensusBlocks struct {
