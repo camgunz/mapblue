@@ -72,7 +72,7 @@ func checkParam(w http.ResponseWriter, r *http.Request, paramName string) bool {
 	return true
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
+func lookup(w http.ResponseWriter, r *http.Request) {
 	var lat1, lon1, lat2, lon2 string
 	form := r.URL.Query()
 
@@ -180,7 +180,7 @@ func main() {
 	}
 	db = pg
 
-	http.HandleFunc("/", handler)
+	http.HandleFunc("/", lookup)
 	fmt.Printf("Listening on %s\n", hostAddressAndPort)
 	http.ListenAndServe(hostAddressAndPort, nil)
 	if err = db.Close(); err != nil {
