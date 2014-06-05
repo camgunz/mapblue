@@ -10,8 +10,6 @@ import (
 	"strconv"
 )
 
-var db *sql.DB
-
 type CensusBlock struct {
 	Name      string
 	Geometry  map[string]interface{}
@@ -27,24 +25,27 @@ type CensusBlocks struct {
 	Blocks []CensusBlock
 }
 
+const postgresAddress = "/var/run/postgresql"
+const postgresUser = "census"
+const postgresDatabase = "census"
+const postgresSSLMode = "disable"
+
+// const hostAddressAndPort = "127.0.0.1:8080"
+const hostAddressAndPort = "0.0.0.0:8080"
+const blockChunkSize = 3000
 const blockQueryTemplate = "SELECT tb.name, ST_AsGeoJSON(tb.the_geom), " +
 	"p11.p0110006, p11.p0110007, p11.p0110008, p11.p0110009, p11.p0110010, " +
-	"p11.p0110011, p11.p0110002, " +
-	"p16.p0160003, " +
-	"p19.p0190009, p19.p0190013, p19.p0190016, " +
-	"p29.p0290007, p29.p0290015, p29.p0290018 " +
+	"p11.p0110011, p11.p0110002, p16.p0160003, p19.p0190009, p19.p0190013, " +
+	"p19.p0190016, p29.p0290007, p29.p0290015, p29.p0290018 " +
 	"FROM tabblock AS tb, geo_locations as gl, p11, p16, p19, p29 " +
 	"WHERE ST_Intersects(the_geom, ST_GeomFromEWKT(" +
 	"'SRID=4269;MULTIPOLYGON(((%s %s, %s %s, %s %s, %s %s, %s %s)))'" +
 	")) " +
-	"AND gl.intptlon = tb.intptlon " +
-	"AND gl.intptlat = tb.intptlat " +
-	"AND p11.logrecno = gl.logrecno " +
-	"AND p16.logrecno = gl.logrecno " +
-	"AND p19.logrecno = gl.logrecno " +
-	"AND p29.logrecno = gl.logrecno;"
+	"AND gl.intptlon = tb.intptlon AND gl.intptlat = tb.intptlat " +
+	"AND p11.logrecno = gl.logrecno AND p16.logrecno = gl.logrecno " +
+	"AND p19.logrecno = gl.logrecno AND p29.logrecno = gl.logrecno;"
 
-const blockChunkSize = 3000
+var db *sql.DB
 
 func send400(w http.ResponseWriter, msg string) {
 	w.WriteHeader(http.StatusBadRequest)
@@ -72,29 +73,23 @@ func checkParam(w http.ResponseWriter, r *http.Request, paramName string) bool {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
+	var lat1, lon1, lat2, lon2 string
 	form := r.URL.Query()
 
-	if !checkParam(w, r, "lat1") {
+	if checkParam(w, r, "lat1") && checkParam(w, r, "lon1") &&
+		checkParam(w, r, "lat2") && checkParam(w, r, "lon2") {
+		lat1 = form["lat1"][0]
+		lon1 = form["lon1"][0]
+		lat2 = form["lat2"][0]
+		lon2 = form["lon2"][0]
+	} else {
 		return
 	}
-	if !checkParam(w, r, "lon1") {
-		return
-	}
-	if !checkParam(w, r, "lat2") {
-		return
-	}
-	if !checkParam(w, r, "lon2") {
-		return
-	}
-
-	lat1 := form["lat1"][0]
-	lon1 := form["lon1"][0]
-	lat2 := form["lat2"][0]
-	lon2 := form["lon2"][0]
 
 	censusBlocks := CensusBlocks{}
 	censusBlocks.Blocks = make([]CensusBlock, blockChunkSize)
 	blockCount := 0
+
 	blockRows, err := db.Query(fmt.Sprintf(blockQueryTemplate,
 		lon1, lat1, lon2, lat1, lon2, lat2, lon2, lat2, lon1, lat1,
 	))
@@ -102,46 +97,35 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		send500(w, err)
 		return
 	}
+
 	for blockRows.Next() {
-		var name, geoJSONData string
-		var blacks, aians, asians, nhopis, others, multis, hispanics int
-		var over18 int
-		var childlessHusbandAndWifeFamilies int
-		var childlessMaleFamilies int
-		var childlessFemaleFamilies int
-		var spouses int
-		var sonsOrDaughtersInLaw int
-		var unrelatedRoommates int
+		var (
+			name, geoJSONData string
+			blacks, aians, asians, nhopis, others, multis, hispanics, over18,
+			childlessHusbandAndWifeFamilies, childlessMaleFamilies,
+			childlessFemaleFamilies, spouses, sonsOrDaughtersInLaw,
+			unrelatedRoommates int
+			geoJSON interface{}
+		)
 
 		if blockCount > len(censusBlocks.Blocks) {
-			newBlocks := make([]CensusBlock, len(censusBlocks.Blocks)+blockChunkSize)
+			newBlocks := make(
+				[]CensusBlock, len(censusBlocks.Blocks)+blockChunkSize,
+			)
 			copy(newBlocks, censusBlocks.Blocks)
 			censusBlocks.Blocks = newBlocks
 		}
 		err = blockRows.Scan(
-			&name,
-			&geoJSONData,
-			&blacks,
-			&aians,
-			&asians,
-			&nhopis,
-			&others,
-			&multis,
-			&hispanics,
-			&over18,
-			&childlessHusbandAndWifeFamilies,
-			&childlessMaleFamilies,
-			&childlessFemaleFamilies,
-			&spouses,
-			&sonsOrDaughtersInLaw,
-			&unrelatedRoommates,
+			&name, &geoJSONData, &blacks, &aians, &asians, &nhopis, &others,
+			&multis, &hispanics, &over18, &childlessHusbandAndWifeFamilies,
+			&childlessMaleFamilies, &childlessFemaleFamilies, &spouses,
+			&sonsOrDaughtersInLaw, &unrelatedRoommates,
 		)
 		if err != nil {
 			send500(w, err)
 			return
 		}
 
-		var geoJSON interface{}
 		err = json.Unmarshal([]byte(geoJSONData), &geoJSON)
 		if err != nil {
 			send500(w, err)
@@ -187,8 +171,9 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	pg, err := sql.Open(
-		"postgres",
-		"host=/var/run/postgresql dbname=census user=census sslmode=disable",
+		"postgres", fmt.Sprintf("host=%s dbname=%s user=%s sslmode=%s",
+			postgresAddress, postgresDatabase, postgresUser, postgresSSLMode,
+		),
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -196,11 +181,9 @@ func main() {
 	db = pg
 
 	http.HandleFunc("/", handler)
-	fmt.Println("Listening on 0.0.0.0:8080")
-	http.ListenAndServe(":8080", nil)
-	err = db.Close()
-	fmt.Println("Closing DB")
-	if err != nil {
+	fmt.Printf("Listening on %s\n", hostAddressAndPort)
+	http.ListenAndServe(hostAddressAndPort, nil)
+	if err = db.Close(); err != nil {
 		log.Fatal(err)
 	}
 }
