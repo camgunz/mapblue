@@ -56,26 +56,36 @@ func send500(w http.ResponseWriter, e error) {
 	w.WriteHeader(http.StatusInternalServerError)
 }
 
-func checkParam(w http.ResponseWriter, r *http.Request, paramName string) {
+func checkParam(w http.ResponseWriter, r *http.Request, paramName string) bool {
 	form := r.URL.Query()
 	if _, ok := form[paramName]; ok {
 		if _, err := strconv.ParseFloat(form[paramName][0], 64); err != nil {
 			send400(w, fmt.Sprintf("Invalid value for %s", paramName))
-			return
+			return false
 		}
 	} else {
 		send400(w, fmt.Sprintf("Required parameter '%s' not given", paramName))
-		return
+		return false
 	}
+
+	return true
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	form := r.URL.Query()
 
-	checkParam(w, r, "lat1")
-	checkParam(w, r, "lon1")
-	checkParam(w, r, "lat2")
-	checkParam(w, r, "lon2")
+	if !checkParam(w, r, "lat1") {
+		return
+	}
+	if !checkParam(w, r, "lon1") {
+		return
+	}
+	if !checkParam(w, r, "lat2") {
+		return
+	}
+	if !checkParam(w, r, "lon2") {
+		return
+	}
 
 	lat1 := form["lat1"][0]
 	lon1 := form["lon1"][0]
