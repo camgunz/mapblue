@@ -1,0 +1,25 @@
+
+#left{
+    width: 1000px;
+    height: 600px;
+    float:left;
+}
+#right{
+    width: 200px;
+    height: 500px;
+    float:left;
+    padding: 10px;
+}
+#right div{
+    margin-bottom: 4px;
+}
+#right textarea{
+    height: 150px;
+    width: 300px;
+}
+#map{
+    height:100%;
+}
+#infoBox {
+    width:300px;
+}
