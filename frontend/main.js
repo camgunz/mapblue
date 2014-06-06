@@ -1,121 +1,14 @@
 var map;
-currentFeature_or_Features = null;
+var blackCoeff = 0.4501479;
+var hispanicCoeff = 0.077551;
+var otherRaceCoeff = 0.1358834;
+var unmarriedCoeff = 0.0911239;
+var childlessCoeff = 0.115441;
+var regressionConstant = 0.3638054;
+var mapblueAPI = "http://totaltrash.org/mapblue/lookup"
 var stateHouseLatitude = 39.768732;
 var stateHouseLongitude = -86.162612;
-
-var geojson_MultiPolygon = {
-    "type": "MultiPolygon",
-    "coordinates": [
-        [
-            [
-                [
-                    -86.157712,
-                    39.776782
-                ],
-                [
-                    -86.157671,
-                    39.777967
-                ],
-                [
-                    -86.157669,
-                    39.777994
-                ],
-                [
-                    -86.15763,
-                    39.777998
-                ],
-                [
-                    -86.157594,
-                    39.777998
-                ],
-                [
-                    -86.156763,
-                    39.777978
-                ],
-                [
-                    -86.155858,
-                    39.777954
-                ],
-                [
-                    -86.155858,
-                    39.777891
-                ],
-                [
-                    -86.155878,
-                    39.777436
-                ],
-                [
-                    -86.155905,
-                    39.776742
-                ],
-                [
-                    -86.155922,
-                    39.776328
-                ],
-                [
-                    -86.155955,
-                    39.775468
-                ],
-                [
-                    -86.157759,
-                    39.775508
-                ],
-                [
-                    -86.157712,
-                    39.776782
-                ]
-            ]
-        ],
-        [
-            [
-                [
-                    -86.155905,
-                    39.776742
-                ],
-                [
-                    -86.154999,
-                    39.776731
-                ],
-                [
-                    -86.154092,
-                    39.776702
-                ],
-                [
-                    -86.154217,
-                    39.776671
-                ],
-                [
-                    -86.154256,
-                    39.776663
-                ],
-                [
-                    -86.154276,
-                    39.776654
-                ],
-                [
-                    -86.15431,
-                    39.776636
-                ],
-                [
-                    -86.15433,
-                    39.776623
-                ],
-                [
-                    -86.154737,
-                    39.776301
-                ],
-                [
-                    -86.155922,
-                    39.776328
-                ],
-                [
-                    -86.155905,
-                    39.776742
-                ]
-            ]
-        ]
-    ]
-};
+var features = [];
 
 var roadStyle = {
     strokeColor: "#FFFF00",
@@ -131,37 +24,81 @@ var parcelStyle = {
     fillOpacity: 0.25
 };
 
-var infowindow = new google.maps.InfoWindow();
+// var infowindow = new google.maps.InfoWindow();
+
+function getDemPercentage(over18, black, hispanic, otherRace, unmarried,
+                          childless) {
+    if (over18 == 0) {
+        return 0;
+    }
+
+    return regressionConstant +
+        (blackCoeff * (black / over18)) +
+        (hispanicCoeff * (otherRace / over18)) +
+        (otherRaceCoeff * (otherRace / over18)) +
+        (unmarriedCoeff * (unmarried / over18)) +
+        (childlessCoeff * (childless / over18));
+}
+
+function handleJSONResponse(data) {
+    if (features.length > 0) {
+        $.each(features, function(index, feature) {
+            map.data.remove(feature);
+        });
+    }
+
+    $.each(data, function(key, blocks) {
+        $.each(blocks, function(index, block) {
+            var newFeatures = map.data.addGeoJson(block);
+
+            $.each(newFeatures, function(index, newFeature) {
+                map.data.overrideStyle(newFeature, {
+                    fillColor: "#4488CC",
+                    fillOpacity: getDemPercentage(
+                        block.properties.over18,
+                        block.properties.black,
+                        block.properties.hispanic,
+                        block.properties.otherRace,
+                        block.properties.unmarried,
+                        block.properties.childless
+                    )
+                });
+            });
+            features = features.concat(newFeatures);
+        });
+    });
+}
+
+function loadBlocks() {
+    var bounds = map.getBounds();
+    var northEast = bounds.getNorthEast();
+    var southWest = bounds.getSouthWest();
+
+    $.getJSON(mapblueAPI, {
+        lat1: northEast.lat(),
+        lon1: southWest.lng(),
+        lat2: southWest.lat(),
+        lon2: northEast.lng()
+    }, handleJSONResponse);
+}
 
 function init() {
-    map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 14,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-    });
+    var latitude = stateHouseLatitude;
+    var longitude = stateHouseLongitude;
+
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            function(position) {
-                var pos = new google.maps.LatLng(
-                    position.coords.latitude,
-                    position.coords.longitude
-                );
-
-                var infowindow = new google.maps.InfoWindow({});
-
-                map.setCenter(pos);
-            },
-            function() {
-                map.setCenter(new google.maps.LatLng(
-                    stateHouseLatitude, stateHouseLongitude
-                ));
-            }
-        );
-    } else {
-        // Browser doesn't support Geolocation
-        map.setCenter(new google.maps.LatLng(
-            stateHouseLatitude, stateHouseLongitude
-        ));
+        navigator.geolocation.getCurrentPosition(function(position) {
+            latitude = position.coords.latitude;
+            longitude = position.coords.longitude;
+        });
     }
+
+    map = new google.maps.Map(document.getElementById('map'), {
+        center: new google.maps.LatLng(latitude, longitude),
+        zoom: 16
+    });
+
+    google.maps.event.addListener(map, 'bounds_changed', loadBlocks);
 }
 
 function clearMap() {
