@@ -115,7 +115,7 @@ func lookup(w http.ResponseWriter, r *http.Request) {
 			geoJSON interface{}
 		)
 
-		if blockCount > len(censusBlocks.Blocks) {
+		if blockCount >= len(censusBlocks.Blocks) {
 			newBlocks := make(
 				[]CensusBlock, len(censusBlocks.Blocks)+blockChunkSize,
 			)
