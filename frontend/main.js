@@ -27,17 +27,17 @@ var parcelStyle = {
 // var infowindow = new google.maps.InfoWindow();
 
 function getDemPercentage(over18, black, hispanic, otherRace, unmarried,
-                          childless) {
+        childless) {
     if (over18 == 0) {
         return 0;
     }
 
     return regressionConstant +
-        (blackCoeff * (black / over18)) +
-        (hispanicCoeff * (otherRace / over18)) +
-        (otherRaceCoeff * (otherRace / over18)) +
-        (unmarriedCoeff * (unmarried / over18)) +
-        (childlessCoeff * (childless / over18));
+            (blackCoeff * (black / over18)) +
+            (hispanicCoeff * (otherRace / over18)) +
+            (otherRaceCoeff * (otherRace / over18)) +
+            (unmarriedCoeff * (unmarried / over18)) +
+            (childlessCoeff * (childless / over18));
 }
 
 function handleJSONResponse(data) {
@@ -55,13 +55,13 @@ function handleJSONResponse(data) {
                 map.data.overrideStyle(newFeature, {
                     fillColor: "#4488CC",
                     fillOpacity: getDemPercentage(
-                        block.properties.over18,
-                        block.properties.black,
-                        block.properties.hispanic,
-                        block.properties.otherRace,
-                        block.properties.unmarried,
-                        block.properties.childless
-                    )
+                            block.properties.over18,
+                            block.properties.black,
+                            block.properties.hispanic,
+                            block.properties.otherRace,
+                            block.properties.unmarried,
+                            block.properties.childless
+                            )
                 });
             });
             features = features.concat(newFeatures);
