@@ -28,6 +28,7 @@ type CensusBlock struct {
 }
 
 type CensusBlocks struct {
+	Type     string        `json:"type"`
 	Features []CensusBlock `json:"features"`
 }
 
@@ -94,6 +95,7 @@ func lookup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	censusBlocks := CensusBlocks{}
+	censusBlocks.Type = "FeatureCollection"
 	censusBlocks.Features = make([]CensusBlock, blockChunkSize)
 	blockCount := 0
 
