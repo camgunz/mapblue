@@ -28,7 +28,7 @@ type CensusBlock struct {
 }
 
 type CensusBlocks struct {
-	Blocks []CensusBlock `json:"blocks"`
+	Features []CensusBlock `json:"features"`
 }
 
 const postgresAddress = "/var/run/postgresql"
@@ -94,7 +94,7 @@ func lookup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	censusBlocks := CensusBlocks{}
-	censusBlocks.Blocks = make([]CensusBlock, blockChunkSize)
+	censusBlocks.Features = make([]CensusBlock, blockChunkSize)
 	blockCount := 0
 
 	blockRows, err := db.Query(fmt.Sprintf(blockQueryTemplate,
@@ -115,12 +115,12 @@ func lookup(w http.ResponseWriter, r *http.Request) {
 			geoJSON interface{}
 		)
 
-		if blockCount >= len(censusBlocks.Blocks) {
+		if blockCount >= len(censusBlocks.Features) {
 			newBlocks := make(
-				[]CensusBlock, len(censusBlocks.Blocks)+blockChunkSize,
+				[]CensusBlock, len(censusBlocks.Features)+blockChunkSize,
 			)
-			copy(newBlocks, censusBlocks.Blocks)
-			censusBlocks.Blocks = newBlocks
+			copy(newBlocks, censusBlocks.Features)
+			censusBlocks.Features = newBlocks
 		}
 		err = blockRows.Scan(
 			&blockID, &name, &geoJSONData, &blacks, &aians, &asians, &nhopis,
@@ -140,7 +140,7 @@ func lookup(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		block := &censusBlocks.Blocks[blockCount]
+		block := &censusBlocks.Features[blockCount]
 		block.ID = blockID
 		block.Type = "Feature"
 		block.Geometry = geoJSON.(map[string]interface{})
@@ -170,7 +170,7 @@ func lookup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	censusBlocks.Blocks = censusBlocks.Blocks[:blockCount]
+	censusBlocks.Features = censusBlocks.Features[:blockCount]
 	jsonData, err := json.MarshalIndent(censusBlocks, "", "    ")
 	if err != nil {
 		send500(w, err)
