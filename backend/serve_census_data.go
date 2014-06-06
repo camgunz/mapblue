@@ -21,6 +21,7 @@ type CensusBlockProperties struct {
 }
 
 type CensusBlock struct {
+	ID         string                 `json:"id"`
 	Type       string                 `json:"type"`
 	Geometry   map[string]interface{} `json:"geometry"`
 	Properties CensusBlockProperties  `json:"properties"`
@@ -38,7 +39,8 @@ const postgresSSLMode = "disable"
 // const hostAddressAndPort = "127.0.0.1:8080"
 const hostAddressAndPort = "0.0.0.0:8080"
 const blockChunkSize = 3000
-const blockQueryTemplate = "SELECT tb.name, ST_AsGeoJSON(tb.the_geom), " +
+const blockQueryTemplate = "SELECT tb.tabblock_id, tb.name, " +
+	"ST_AsGeoJSON(tb.the_geom), " +
 	"p11.p0110006, p11.p0110007, p11.p0110008, p11.p0110009, p11.p0110010, " +
 	"p11.p0110011, p11.p0110002, p16.p0160003, p19.p0190009, p19.p0190013, " +
 	"p19.p0190016, p29.p0290007, p29.p0290015, p29.p0290018 " +
@@ -105,7 +107,7 @@ func lookup(w http.ResponseWriter, r *http.Request) {
 
 	for blockRows.Next() {
 		var (
-			name, geoJSONData string
+			blockID, name, geoJSONData string
 			blacks, aians, asians, nhopis, others, multis, hispanics, over18,
 			childlessHusbandAndWifeFamilies, childlessMaleFamilies,
 			childlessFemaleFamilies, spouses, sonsOrDaughtersInLaw,
@@ -121,10 +123,11 @@ func lookup(w http.ResponseWriter, r *http.Request) {
 			censusBlocks.Blocks = newBlocks
 		}
 		err = blockRows.Scan(
-			&name, &geoJSONData, &blacks, &aians, &asians, &nhopis, &others,
-			&multis, &hispanics, &over18, &childlessHusbandAndWifeFamilies,
-			&childlessMaleFamilies, &childlessFemaleFamilies, &spouses,
-			&sonsOrDaughtersInLaw, &unrelatedRoommates,
+			&blockID, &name, &geoJSONData, &blacks, &aians, &asians, &nhopis,
+			&others, &multis, &hispanics, &over18,
+			&childlessHusbandAndWifeFamilies, &childlessMaleFamilies,
+			&childlessFemaleFamilies, &spouses, &sonsOrDaughtersInLaw,
+			&unrelatedRoommates,
 		)
 		if err != nil {
 			send500(w, err)
@@ -138,6 +141,7 @@ func lookup(w http.ResponseWriter, r *http.Request) {
 		}
 
 		block := &censusBlocks.Blocks[blockCount]
+		block.ID = blockID
 		block.Type = "Feature"
 		block.Geometry = geoJSON.(map[string]interface{})
 		block.Properties.Name = name
