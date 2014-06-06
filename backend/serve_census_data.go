@@ -10,19 +10,24 @@ import (
 	"strconv"
 )
 
+type CensusBlockProperties struct {
+	Name      string `json:"name"`
+	Over18    int    `json:"over18"`
+	Black     int    `json:"black"`
+	Hispanic  int    `json:"hispanic"`
+	OtherRace int    `json:"otherRace"`
+	Unmarried int    `json:"unmarried"`
+	Childless int    `json:"childless"`
+}
+
 type CensusBlock struct {
-	Name      string
-	Geometry  map[string]interface{}
-	Over18    int
-	Black     int
-	Hispanic  int
-	OtherRace int
-	Unmarried int
-	Childless int
+	Type       string                 `json:"type"`
+	Geometry   map[string]interface{} `json:"geometry"`
+	Properties CensusBlockProperties  `json:"properties"`
 }
 
 type CensusBlocks struct {
-	Blocks []CensusBlock
+	Blocks []CensusBlock `json:"blocks"`
 }
 
 const postgresAddress = "/var/run/postgresql"
@@ -133,14 +138,17 @@ func lookup(w http.ResponseWriter, r *http.Request) {
 		}
 
 		block := &censusBlocks.Blocks[blockCount]
-		block.Name = name
+		block.Type = "Feature"
 		block.Geometry = geoJSON.(map[string]interface{})
-		block.Over18 = over18
-		block.Black = blacks
-		block.Hispanic = hispanics
-		block.OtherRace = aians + asians + nhopis + others + multis
-		block.Unmarried = over18 - ((spouses * 2) + (sonsOrDaughtersInLaw * 2))
-		block.Childless = unrelatedRoommates +
+		block.Properties.Name = name
+		block.Properties.Over18 = over18
+		block.Properties.Black = blacks
+		block.Properties.Hispanic = hispanics
+		block.Properties.OtherRace =
+			aians + asians + nhopis + others + multis
+		block.Properties.Unmarried =
+			over18 - ((spouses * 2) + (sonsOrDaughtersInLaw * 2))
+		block.Properties.Childless = unrelatedRoommates +
 			(childlessHusbandAndWifeFamilies * 2) +
 			childlessMaleFamilies +
 			childlessFemaleFamilies
