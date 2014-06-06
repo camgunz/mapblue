@@ -100,7 +100,7 @@ func lookup(w http.ResponseWriter, r *http.Request) {
 	blockCount := 0
 
 	blockRows, err := db.Query(fmt.Sprintf(blockQueryTemplate,
-		lon1, lat1, lon2, lat1, lon2, lat2, lon2, lat2, lon1, lat1,
+		lon1, lat1, lon2, lat1, lon2, lat2, lon1, lat2, lon1, lat1,
 	))
 	if err != nil {
 		send500(w, err)
