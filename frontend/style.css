@@ -1,25 +1,55 @@
-
 #left{
-    width: 1000px;
-    height: 600px;
-    float:left;
+    height: 560px;
 }
-#right{
-    width: 200px;
-    height: 500px;
-    float:left;
-    padding: 10px;
-}
-#right div{
-    margin-bottom: 4px;
-}
-#right textarea{
-    height: 150px;
-    width: 300px;
-}
+
 #map{
     height:100%;
 }
-#infoBox {
-    width:300px;
+
+#branding {
+    position: absolute;
+    height: 145px;
+    width: 150px;
+    left: 0;
+    float: left;
+    background: url(../img/logo.png) 30px 60px no-repeat;
+}
+
+#content {
+    position: absolute;
+    height: 120px;
+    width: 99%;
+    bottom: 0px;
+    background: rgb(255,255,255); /* old ie */
+    background: rgba(255,255,255,.9);
+    border-bottom: 1px solid #ccc;
+    border-top: 5px solid #333;
+    overflow-y: hidden;
+    z-index: 2;
+}
+
+#about {
+    margin-left: 150px;
+    width: 689px;
+    float: left;
+    padding: 0 20px;
+    border-left: 1px solid #bbb;
+}
+
+
+h1 {
+    margin-top: 10px;
+}
+
+#search {
+    height: 30px;
+    margin-top: 25px;
+    margin-bottom: 20px;
+}
+
+#coefficients {
+    float: right;
+    height: 100%;
+    
+    width:450px;
 }

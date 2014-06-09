@@ -1,20 +1,34 @@
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
     <head>
+        <title>MapBlue</title>
 
-        <title>GeoJSON to Google Maps</title>
         <link rel="stylesheet" type="text/css" href="style.css" />
-        <script type="text/javascript"
-        src="http://maps.google.com/maps/api/js"></script>
-        <script type="text/javascript"
-                src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js">
-        </script>
-        <script type="text/javascript" src="main.js"></script>
+        <script type="text/javascript" src="http://maps.google.com/maps/api/js"></script>
+        <script type="text/javascript" src="main.js"></script>        
 
     </head>
 
-    <body onload="init();">
+    <body data-map="map" onload="init();">
+        <div id="content">
+            <div id="about">
+                <h1>Map Blue</h1>
+            </div>
+            <div id="coefficients">
+                <form name="coefficients" onSubmit="restyleBlocks()">
+                    <script type="text/javascript">
+                        document.write('Black Coefficient<input type="text" name="blackCoeff" value="' + blackCoeff + '" /><br />');
+                        document.write('Hispanic Coefficient<input type="text" name="hispanicCoeff" value="' + hispanicCoeff + '" /><br />');
+                        document.write('Other Race Coefficient<input type="text" name="otherRaceCoeff" value="' + otherRaceCoeff + '" /><br />');
+                        document.write('Unmarried Coefficient<input type="text" name="unmarriedCoeff" value="' + unmarriedCoeff + '" /><br />');
+                        document.write('Childless Coefficient<input type="text" name="childlessCoeff" value="' + childlessCoeff + '" /><br />');
+                        document.write('Regression Constant<input type="text" name="regressionConstant" value="' + regressionConstant + '" /><br />');
+                    </script>
+                    <input name="Submit"  type="submit" value="Update" />
+                </form>
+            </div>
+        </div>
+
 
         <div id="left">
             <div id="map"></div>
