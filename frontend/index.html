@@ -1,22 +1,33 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>MapBlue</title>
+        <meta charset="UTF-8" />
+        <title>Map Blue</title>
+        <link rel="stylesheet" href="http://api.tiles.mapbox.com/mapbox.js/v1.6.3/mapbox.css" type="text/css" />
+        <link rel="stylesheet" href="fonts/fonts.css" type="text/css" />
+        <link rel="stylesheet" href="css/style.css" type="text/css" />
+        <link rel="stylesheet" href="css/mapbox.share.css" type="text/css" />
+        <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
 
-        <link rel="stylesheet" type="text/css" href="style.css" />
-        <script type="text/javascript" src="http://maps.google.com/maps/api/js"></script>
-        <script type="text/javascript" src="main.js"></script>        
 
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
         <script src='https://api.tiles.mapbox.com/mapbox.js/v0.6.3/mapbox.uncompressed.js'></script>
-        <script src="ext/jquery.min.js"></script>
+        <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
         <script src="ext/mapbox.jquery.js"></script>
         <script src="ext/mapbox.jquery.geocoder.js"></script>
         <script src="ext/mapbox.share.js"></script>
+        <script src="ext/menu.jquery.js"></script>
+        <script src="script.js"></script>
+
 
     </head>
 
-    <body data-map="map" onload="init();">
+    <!-- Here we use `data-map` to specify the id of the div the map is in -->
+    <body data-map="map">
         <div id="content">
+
+            <div id='branding'></div>
             <div id="about">
                 <h1>Map Blue</h1>
                 <!-- Geocoder -->
@@ -27,23 +38,28 @@
                         <div id="geocode-error"></div>
                     </form>
                 </div>
+
             </div>
-            <div id="coefficients">
+        </div>
+
+        <div id="projects" class="layers" data-control="switcher">
+            <a class="hide">Regression Coefficients</a>
+            <div class="content">
                 <script type="text/javascript">
-                    document.write('African American Coefficient<input type="text" id="blackCoeff" value="' + blackCoeff + '" onKeyUp="restyleBlocks()" /><br />');
-                    document.write('Hispanic Coefficient<input type="text" id="hispanicCoeff" value="' + hispanicCoeff + '" onKeyUp="restyleBlocks()" /><br />');
-                    document.write('Other Race Coefficient<input type="text" id="otherRaceCoeff" value="' + otherRaceCoeff + '" onKeyUp="restyleBlocks()" /><br />');
-                    document.write('Unmarried Coefficient<input type="text" id="unmarriedCoeff" value="' + unmarriedCoeff + '" onKeyUp="restyleBlocks()" /><br />');
-                    document.write('No Children Coefficient<input type="text" id="childlessCoeff" value="' + childlessCoeff + '" onKeyUp="restyleBlocks()" /><br />');
-                    document.write('Regression Constant<input type="text" id="regressionConstant" value="' + regressionConstant + '" onKeyUp="restyleBlocks()" /><br />');
-                </script>
+                    document.write('<a>African American Coefficient<input class="textbox" type="text" id="blackCoeff" value="' + blackCoeff + '" onKeyUp="restyleBlocks()" /></a><br />');
+                    document.write('<a>Hispanic Coefficient<input class="textbox" type="text" id="hispanicCoeff" value="' + hispanicCoeff + '" onKeyUp="restyleBlocks()" /></a><br />');
+                    document.write('<a>Other Race Coefficient<input class="textbox" type="text" id="otherRaceCoeff" value="' + otherRaceCoeff + '" onKeyUp="restyleBlocks()" /></a><br />');
+                    document.write('<a>Unmarried Coefficient<input class="textbox" type="text" id="unmarriedCoeff" value="' + unmarriedCoeff + '" onKeyUp="restyleBlocks()" /></a><br />');
+                    document.write('<a>No Children Coefficient<input class="textbox" type="text" id="childlessCoeff" value="' + childlessCoeff + '" onKeyUp="restyleBlocks()" /></a><br />');
+                    document.write('<a>Regression Constant<input class="textbox" type="text" id="regressionConstant" value="' + regressionConstant + '" onKeyUp="restyleBlocks()" /></a><br />');
+                    document.write('<a class="close" onClick="hideMenu();">Close</a><br />');
+                </script>       
             </div>
         </div>
+        
 
-        <div id="left">
-            <div id="map"></div>
+        <div id="map" class="map">
+            <script src="script.js"></script>
         </div>
-
     </body>
-
 </html>
