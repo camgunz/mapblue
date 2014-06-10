@@ -5,4 +5,7 @@ jQuery(document).ready(function() {
   {
     jQuery(this).next(".content").slideToggle(10);
   });
+  jQuery(".close").click(function(){
+    jQuery(".content").hide();
+  });
 });
