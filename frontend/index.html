@@ -10,6 +10,7 @@
         <link rel="stylesheet" href="css/style.css" type="text/css" />
         <link rel="stylesheet" href="css/mapbox.share.css" type="text/css" />
         <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
+        <script data-main="js/script" src="js/require.js"></script>
 
         <script src="//code.jquery.com/jquery-1.10.2.js"></script>
         <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
@@ -40,13 +41,44 @@
         <div id="projects" class="layers" data-control="switcher">
             <a class="hide">Regression Coefficients</a>
             <div class="content">
-                <a>African American<input class="textbox" type="text" id="blackCoeff" value="" onKeyUp="restyleBlocks()" /></a><br />
-                <a>Hispanic<input class="textbox" type="text" id="hispanicCoeff" value="" onKeyUp="restyleBlocks()" /></a><br />
-                <a>Other Race<input class="textbox" type="text" id="otherRaceCoeff" value="" onKeyUp="restyleBlocks()" /></a><br />
-                <a>Unmarried<input class="textbox" type="text" id="unmarriedCoeff" value="" onKeyUp="restyleBlocks()" /></a><br />
-                <a>No Children<input class="textbox" type="text" id="childlessCoeff" value="" onKeyUp="restyleBlocks()" /></a><br />
-                <a>Regression Constant<input class="textbox" type="text" id="regressionConstant" value="" onKeyUp="restyleBlocks()" /></a><br />
-                <a class="close" onClick="hideMenu();">Close</a><br />');
+                <a>
+                    African American
+                    <input class="textbox" type="text" id="blackCoeff" value=""
+                           onKeyUp="restyleBlocks()" />
+                </a>
+                <br />
+                <a>
+                    Hispanic
+                    <input class="textbox" type="text" id="hispanicCoeff" value=""
+                           onKeyUp="restyleBlocks()" />
+                </a>
+                <br />
+                <a>
+                    Other Race
+                    <input class="textbox" type="text" id="otherRaceCoeff" value=""
+                           onKeyUp="restyleBlocks()" />
+                </a>
+                <br />
+                <a>
+                    Unmarried
+                    <input class="textbox" type="text" id="unmarriedCoeff" value=""
+                           onKeyUp="restyleBlocks()" />
+                </a>
+                <br />
+                <a>
+                    No Children
+                    <input class="textbox" type="text" id="childlessCoeff" value=""
+                           onKeyUp="restyleBlocks()" />
+                </a>
+                <br />
+                <a>
+                    Regression Constant
+                    <input class="textbox" type="text" id="regressionConstant" value=""
+                           onKeyUp="restyleBlocks()" />
+                </a>
+                <br />
+                <a class="close" onClick="hideMenu();">Close</a>
+                <br />
             </div>
         </div>
         <div id="map" class="map"></div>
