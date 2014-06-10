@@ -1,120 +1,106 @@
-var TileJSONs = [
-    'https://a.tiles.mapbox.com/v3/examples.map-20v6611k,mapbox.dc-property-values.jsonp?secure',
-];
-
-$('#map').mapbox(TileJSONs, function(map) {
-
-    stateHouseLatitude = 39.768732;
-    stateHouseLongitude = -86.162612;
-
-    // Set initial latitude, longitude and zoom level
-    map.setCenterZoom({
-        lat: stateHouseLatitude,
-        lon: stateHouseLongitude
-    }, 16);
-
-    // Set minimum and maximum zoom levels
-    map.setZoomRange(15, 18);
-/*
-    map.data.setStyle(styleBlock);
-
-    google.maps.event.addListener(map, 'tilesloaded', updateBlocks);
-    google.maps.event.addListener(map, 'zoom_changed', updateBlocks);
-    google.maps.event.addListener(map, 'dragend', updateBlocks);
-    */
-
-});
-
+var map = null;
 var blackCoeff = 0.4501479;
 var hispanicCoeff = 0.077551;
 var otherRaceCoeff = 0.1358834;
 var unmarriedCoeff = 0.0911239;
 var childlessCoeff = 0.115441;
 var regressionConstant = 0.3638054;
-var mapblueAPI = "http://totaltrash.org/mapblue/lookup"
+var mapblueAPI = "http://mapblue.org/lookup"
 var stateHouseLatitude = 39.768732;
 var stateHouseLongitude = -86.162612;
+var mapboxTileJSON = 'https://a.tiles.mapbox.com/v3/examples.map-20v6611k,mapbox.dc-property-values.jsonp?secure';
 
 function getDemProbability(over18, black, hispanic, otherRace, unmarried,
-        childless) {
+                           childless) {
     if (over18 == 0) {
         return 0;
     }
 
-    return regressionConstant +
-            (blackCoeff * (black / over18)) +
-            (hispanicCoeff * (hispanic / over18)) +
-            (otherRaceCoeff * (otherRace / over18)) +
-            (unmarriedCoeff * (unmarried / over18)) +
-            (childlessCoeff * (childless / over18));
+    return regressionConstant + (blackCoeff * (black / over18)) +
+                                (hispanicCoeff * (hispanic / over18)) +
+                                (otherRaceCoeff * (otherRace / over18)) +
+                                (unmarriedCoeff * (unmarried / over18)) +
+                                (childlessCoeff * (childless / over18));
+}
+
+function getBlockDemProbability(block) {
+    return getDemProbability(
+        block.properties.over18,
+        block.properties.black,
+        block.properties.hispanic,
+        block.properties.otherRace,
+        block.properties.unmarried,
+        block.properties.childless
+    );
 }
 
 function buildAPIURL(lat1, lon1, lat2, lon2) {
     return mapblueAPI + "?lat1=" + lat1 +
-            "&lon1=" + lon1 +
-            "&lat2=" + lat2 +
-            "&lon2=" + lon2;
+                        "&lon1=" + lon1 +
+                        "&lat2=" + lat2 +
+                        "&lon2=" + lon2;
 }
 
-function styleBlock(block) {
-    var over18 = block.getProperty('over18');
-    var black = block.getProperty('black');
-    var hispanic = block.getProperty('hispanic');
-    var otherRace = block.getProperty('otherRace');
-    var unmarried = block.getProperty('unmarried');
-    var childless = block.getProperty('childless');
-    var demProbability = getDemProbability(
-            block.getProperty('over18'),
-            block.getProperty('black'),
-            block.getProperty('hispanic'),
-            block.getProperty('otherRace'),
-            block.getProperty('unmarried'),
-            block.getProperty('childless')
-            )
+function blockStyler(block) {
+    var demProbability = getBlockDemProbability(block);
 
-    if (over18 < .3) {
+    if (block.properties.over18 == 0) {
         return {
-            fillColor: "#BBBBBB",
-            fillOpacity: .5,
-            strokeWeight: 1
+            fillColor: "#FFFFFF",
+            fillOpacity: 0.0,
+            stroke: false
         };
     }
 
     if (demProbability < .5) {
         return {
             fillColor: "#BB4444",
-            fillOpacity: demProbability,
-            strokeWeight: 1
+            fillOpacity: 1.0 - demProbability,
+            stroke: false
         };
     }
 
     return {
         fillColor: "#4488CC",
         fillOpacity: demProbability,
-        strokeWeight: 1
+        stroke: false
     };
 }
 
-function restyleBlocks() {
-
-    blackCoeff = parseFloat(document.getElementById('blackCoeff').value);
-    hispanicCoeff = parseFloat(document.getElementById('hispanicCoeff').value);
-    otherRaceCoeff = parseFloat(document.getElementById('otherRaceCoeff').value);
-    unmarriedCoeff = parseFloat(document.getElementById('unmarriedCoeff').value);
-    childlessCoeff = parseFloat(document.getElementById('childlessCoeff').value);
-    regressionConstant = parseFloat(document.getElementById('regressionConstant').value);
-
-    map.data.forEach(function(feature) {
-        map.data.overrideStyle(feature, styleBlock(feature));
-    });
-}
-
-function updateBlocks() {
+function getMapCoordinates() {
     var bounds = map.getBounds();
     var northEast = bounds.getNorthEast();
     var southWest = bounds.getSouthWest();
 
-    map.data.loadGeoJson(buildAPIURL(
-            northEast.lat(), northEast.lng(), southWest.lat(), southWest.lng()
-            ))
+    return {
+        lat1: northEast.lat,
+        lon1: northEast.lng,
+        lat2: southWest.lat,
+        lon2: southWest.lng
+    };
 }
+
+function loadBlocks() {
+    $.getJSON(mapblueAPI, getMapCoordinates(), function(data) {
+        L.geoJson(data, { style: blockStyler }).addTo(map);
+    });
+}
+
+function init() {
+    $('#blackCoeff').val(blackCoeff);
+    $('#hispanicCoeff').val(hispanicCoeff);
+    $('#otherRaceCoeff').val(otherRaceCoeff);
+    $('#unmarriedCoeff').val(unmarriedCoeff);
+    $('#childlessCoeff').val(childlessCoeff);
+    $('#regressionConstant').val(regressionConstant);
+
+    map = L.mapbox.map('map', mapboxTileJSON, {
+        center: [stateHouseLatitude, stateHouseLongitude],
+        zoom: 16,
+        minZoom: 15,
+        maxZoom: 18,
+    });
+    loadBlocks();
+    map.on('moveend', loadBlocks);
+}
+
