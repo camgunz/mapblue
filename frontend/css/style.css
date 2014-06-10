@@ -131,15 +131,15 @@ body > div {
 
 .layers, .hide, .content {
     position: absolute;
-    width: 120px;
-    left: 10px;
+    width: 125px;
+    left: 25px;
     top: 5px;
-    border-left: 5px solid #333;
+    //border-left: 5px solid #333;
 }
 
 .layers a {
     padding: 10px;
-    margin: 1px 0;
+    margin: 2px 0;
     border-left: 5px solid #fff;
     background: white;
     color: #333;
@@ -147,17 +147,19 @@ body > div {
 }
 
 .textbox { 
-    border: 1px solid #848484; 
-    -webkit-border-radius: 30px; 
-    -moz-border-radius: 30px; 
-    border-radius: 30px; 
+//    font-weight: bold;
+    border: 0px solid #EEEEEE; 
+    border-bottom:1px solid;
+//    -webkit-border-radius: 30px; 
+//    -moz-border-radius: 30px; 
+//    border-radius: 25px; 
     outline:0; 
     height:25px; 
     width: 275px; 
     padding-left:10px; 
     padding-right:10px; 
     width: 100px;
-    background: #FFF;
+    background: #f8f8f8;
     text-align: center
 } 
 
