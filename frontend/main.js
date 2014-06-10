@@ -71,10 +71,15 @@ function styleBlock(block) {
 
 function restyleBlocks() {
     
-    
+    blackCoeff = parseFloat(document.getElementById('blackCoeff').value);
+    hispanicCoeff = parseFloat(document.getElementById('hispanicCoeff').value);
+    otherRaceCoeff = parseFloat(document.getElementById('otherRaceCoeff').value);
+    unmarriedCoeff = parseFloat(document.getElementById('unmarriedCoeff').value);
+    childlessCoeff = parseFloat(document.getElementById('childlessCoeff').value);
+    regressionConstant = parseFloat(document.getElementById('regressionConstant').value);
     
     map.data.forEach(function(feature) {
-        overrideStyle(feature, styleBlock(feature));
+        map.data.overrideStyle(feature, styleBlock(feature));
     });
 }
 
@@ -102,7 +107,7 @@ function init() {
     map = new google.maps.Map(document.getElementById('map'), {
         center: new google.maps.LatLng(latitude, longitude),
         zoom: 16,
-        minZoom: 14,
+        minZoom: 15,
         maxZoom: 18,
         streetViewControl: false
     });
