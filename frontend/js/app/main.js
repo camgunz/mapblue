@@ -123,7 +123,7 @@ function init() {
     map = L.mapbox.map('map', mapboxTileJSON, {
         center: [stateHouseLatitude, stateHouseLongitude],
         zoom: 16,
-        minZoom: 15,
+        minZoom: 14,
         maxZoom: 18,
     });
     loadBlocks();
