@@ -19,10 +19,11 @@
         <!--
         <script src="js/lib/mapbox.share.js"></script>
         -->
-        <script src="js/app/menu.jquery.js"></script>
-        <script src="js/app/main.js"></script>
+        <script src="js/lib/wax.ext.js"></script>
         <script src="js/lib/mapbox.jquery.js"></script>
         <script src="js/lib/mapbox.jquery.geocoder.js"></script>
+        <script src="js/app/menu.jquery.js"></script>
+        <script src="js/app/main.js"></script>
     </head>
 
     <!-- Here we use `data-map` to specify the id of the div the map is in -->
@@ -40,43 +41,43 @@
                 </div>
             </div>
         </div>
-        <div id="projects" class="layers" data-control="switcher">
-            <a class="hide">Regression Coefficients</a>
+        <div id="projects" class="layers">
+            <a href="#" class="hide">Regression Coefficients</a>
             <div class="content">
-                <a>
+                <a href="#">
                     African American
                     <input class="textbox" type="text" id="blackCoeff" value=""
-                           onKeyUp="restyleBlocks()" />
+                           onKeyUp="reloadBlocks()" />
                 </a>
                 <br />
-                <a>
+                <a href="#">
                     Hispanic
                     <input class="textbox" type="text" id="hispanicCoeff" value=""
-                           onKeyUp="restyleBlocks()" />
+                           onKeyUp="reloadBlocks()" />
                 </a>
                 <br />
-                <a>
+                <a href="#">
                     Other Race
                     <input class="textbox" type="text" id="otherRaceCoeff" value=""
-                           onKeyUp="restyleBlocks()" />
+                           onKeyUp="reloadBlocks()" />
                 </a>
                 <br />
-                <a>
+                <a href="#">
                     Unmarried
                     <input class="textbox" type="text" id="unmarriedCoeff" value=""
-                           onKeyUp="restyleBlocks()" />
+                           onKeyUp="reloadBlocks()" />
                 </a>
                 <br />
-                <a>
+                <a href="#">
                     No Children
                     <input class="textbox" type="text" id="childlessCoeff" value=""
-                           onKeyUp="restyleBlocks()" />
+                           onKeyUp="reloadBlocks()" />
                 </a>
                 <br />
-                <a>
+                <a href="#">
                     Regression Constant
                     <input class="textbox" type="text" id="regressionConstant" value=""
-                           onKeyUp="restyleBlocks()" />
+                           onKeyUp="reloadBlocks()" />
                 </a>
                 <br />
                 <a class="close" onClick="hideMenu();">Close</a>
