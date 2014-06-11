@@ -102,7 +102,6 @@ function init() {
         minZoom: 15,
         maxZoom: 18,
     });
-    map.addControl(L.mapbox.geocoderControl(mapboxTileJSON));
     loadBlocks();
     map.on('moveend', loadBlocks);
     console.log("Loaded");
