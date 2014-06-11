@@ -1,4 +1,5 @@
-var map = null;
+var geoJSONData = null;
+var geoJSONLayer = null;
 var blackCoeff = 0.4501479;
 var hispanicCoeff = 0.077551;
 var otherRaceCoeff = 0.1358834;
@@ -9,7 +10,6 @@ var mapblueAPI = 'http://mapblue.org/lookup'
 var stateHouseLatitude = 39.768732;
 var stateHouseLongitude = -86.162612;
 var mapboxTileJSON = 'https://a.tiles.mapbox.com/v3/examples.map-20v6611k,mapbox.dc-property-values.jsonp?secure';
-var loadedBlocks = [];
 
 function getDemProbability(over18, black, hispanic, otherRace, unmarried,
                            childless) {
@@ -42,8 +42,12 @@ function buildAPIURL(lat1, lon1, lat2, lon2) {
                         '&lon2=' + lon2;
 }
 
+function getMap() {
+    return $('#map').mapbox();
+}
+
 function getMapCoordinates() {
-    var bounds = map.getBounds();
+    var bounds = getMap().getBounds();
     var northEast = bounds.getNorthEast();
     var southWest = bounds.getSouthWest();
 
@@ -81,33 +85,41 @@ function blockStyler(block) {
     };
 }
 
-function blockFilter(block) {
-    if (loadedBlocks.indexOf(block.id) == -1) {
-        loadedBlocks.push(block.id);
-        return true;
+function clearBlocks() {
+    var map = getMap();
+
+    if (geoJSONData && map.hasLayer(geoJSONLayer)) {
+        map.removeLayer(geoJSONLayer);
     }
-    return false;
+}
+
+function updateCoefficients() {
+    blackCoeff = parseFloat($('#blackCoeff').val());
+    hispanicCoeff = parseFloat($('#hispanicCoeff').val());
+    otherRaceCoeff = parseFloat($('#otherRaceCoeff').val());
+    unmarriedCoeff = parseFloat($('#unmarriedCoeff').val());
+    childlessCoeff = parseFloat($('#childlessCoeff').val());
+    regressionConstant = parseFloat($('#regressionConstant').val());
+}
+
+function setBlocks() {
+    geoJSONLayer = L.geoJson(geoJSONData, {
+        style: blockStyler
+    });
+    geoJSONLayer.addTo(getMap());
 }
 
 function loadBlocks() {
     $.getJSON(mapblueAPI, getMapCoordinates(), function(data) {
-        var geoJSON = map.featureLayer.getGeoJSON();
-
-        if (!geoJSON) {
-            L.geoJson(data, {
-                style: blockStyler,
-                filter: blockFilter
-            }).addTo(map);
-        }
-        else {
-            geoJSON.addData(data);
-        }
-
-        // L.geoJson(data, { style: blockStyler }).addTo(map);
-
-        // L.geoJson(data, { style: blockStyler }).addTo(map);
-        // map.featureLayer = L.geoJson(data, { style: blockStyler });
+        geoJSONData = data;
+        reloadBlocks();
     });
+}
+
+function reloadBlocks(e) {
+    updateCoefficients();
+    clearBlocks();
+    setBlocks();
 }
 
 function init() {
@@ -120,15 +132,14 @@ function init() {
     $('#childlessCoeff').val(childlessCoeff);
     $('#regressionConstant').val(regressionConstant);
 
-    map = L.mapbox.map('map', mapboxTileJSON, {
+    // map = L.mapbox.map('map', mapboxTileJSON, {
+    $('#map').mapbox(mapboxTileJSON, {
         center: [stateHouseLatitude, stateHouseLongitude],
         zoom: 16,
         minZoom: 14,
         maxZoom: 18,
-    });
+    }).on('moveend', loadBlocks);;
     loadBlocks();
-    map.on('moveend', loadBlocks);
-    console.log("Loaded");
 }
 
 $(document).ready(init);
