@@ -1,6 +1,8 @@
 package main
 
 import (
+	"compress/gzip"
+	"compress/zlib"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -8,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type CensusBlockProperties struct {
@@ -81,6 +84,9 @@ func checkParam(w http.ResponseWriter, r *http.Request, paramName string) bool {
 }
 
 func lookup(w http.ResponseWriter, r *http.Request) {
+	var supportedEncodings = r.Header.Get("Accept-Encoding")
+	var supportsGZIP = strings.Contains(supportedEncodings, "gzip")
+	var supportsZLIB = strings.Contains(supportedEncodings, "deflate")
 	var lat1, lon1, lat2, lon2 string
 	form := r.URL.Query()
 
@@ -180,6 +186,22 @@ func lookup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json;charset=utf-8")
+
+	if supportsGZIP {
+		w.Header().Set("Content-Encoding", "gzip")
+		gzipWriter, _ := gzip.NewWriterLevel(w, gzip.BestSpeed)
+		gzipWriter.Write(jsonData)
+		gzipWriter.Close()
+		return
+	}
+	if supportsZLIB {
+		w.Header().Set("Content-Encoding", "deflate")
+		zlibWriter, _ := zlib.NewWriterLevel(w, zlib.BestSpeed)
+		zlibWriter.Write(jsonData)
+		zlibWriter.Close()
+		return
+	}
+
 	fmt.Fprint(w, string(jsonData))
 }
 
