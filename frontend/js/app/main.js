@@ -5,7 +5,7 @@ var otherRaceCoeff = 0.1358834;
 var unmarriedCoeff = 0.0911239;
 var childlessCoeff = 0.115441;
 var regressionConstant = 0.3638054;
-var mapblueAPI = "http://mapblue.org/lookup"
+var mapblueAPI = 'http://mapblue.org/lookup'
 var stateHouseLatitude = 39.768732;
 var stateHouseLongitude = -86.162612;
 var mapboxTileJSON = 'https://a.tiles.mapbox.com/v3/examples.map-20v6611k,mapbox.dc-property-values.jsonp?secure';
@@ -35,10 +35,10 @@ function getBlockDemProbability(block) {
 }
 
 function buildAPIURL(lat1, lon1, lat2, lon2) {
-    return mapblueAPI + "?lat1=" + lat1 +
-                        "&lon1=" + lon1 +
-                        "&lat2=" + lat2 +
-                        "&lon2=" + lon2;
+    return mapblueAPI + '?lat1=' + lat1 +
+                        '&lon1=' + lon1 +
+                        '&lat2=' + lat2 +
+                        '&lon2=' + lon2;
 }
 
 function blockStyler(block) {
@@ -46,7 +46,7 @@ function blockStyler(block) {
 
     if (block.properties.over18 == 0) {
         return {
-            fillColor: "#FFFFFF",
+            fillColor: '#FFFFFF',
             fillOpacity: 0.0,
             stroke: false
         };
@@ -54,14 +54,14 @@ function blockStyler(block) {
 
     if (demProbability < .5) {
         return {
-            fillColor: "#BB4444",
+            fillColor: '#BB4444',
             fillOpacity: 1.0 - demProbability,
             stroke: false
         };
     }
 
     return {
-        fillColor: "#4488CC",
+        fillColor: '#4488CC',
         fillOpacity: demProbability,
         stroke: false
     };
@@ -87,6 +87,8 @@ function loadBlocks() {
 }
 
 function init() {
+    // $(function() {$('body')});
+
     $('#blackCoeff').val(blackCoeff);
     $('#hispanicCoeff').val(hispanicCoeff);
     $('#otherRaceCoeff').val(otherRaceCoeff);
@@ -100,7 +102,18 @@ function init() {
         minZoom: 15,
         maxZoom: 18,
     });
+    map.addControl(L.mapbox.geocoderControl(mapboxTileJSON));
     loadBlocks();
     map.on('moveend', loadBlocks);
+    console.log("Loaded");
 }
+
+$(document).ready(init);
+
+/*
+require([
+    'json3', 'jquery', 'mapbox', 'mapbox.jquery', 'mapbox.jquery.geocoder',
+    'mapbox.share', 'app/menu.jquery'
+], init);
+*/
 

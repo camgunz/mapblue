@@ -10,21 +10,26 @@
         <link rel="stylesheet" href="css/style.css" type="text/css" />
         <link rel="stylesheet" href="css/mapbox.share.css" type="text/css" />
         <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
-        <script data-main="js/script" src="js/require.js"></script>
+        <!--
+        <script data-main="js/app" src="js/lib/require.js"></script>
+        -->
 
         <script src="//code.jquery.com/jquery-1.10.2.js"></script>
-        <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-        <script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.3/mapbox.uncompressed.js'>
+        <script
+         src='https://api.tiles.mapbox.com/mapbox.js/v1.6.3/mapbox.uncompressed.js'>
         </script>
-        <script src="ext/mapbox.jquery.js"></script>
-        <script src="ext/mapbox.jquery.geocoder.js"></script>
-        <script src="ext/mapbox.share.js"></script>
-        <script src="ext/menu.jquery.js"></script>
-        <script src="script.js"></script>
+        <script src="js/lib/reqwest.min.js"></script>
+        <!--
+        <script src="js/lib/mapbox.share.js"></script>
+        -->
+        <script src="js/app/menu.jquery.js"></script>
+        <script src="js/app/main.js"></script>
+        <script src="js/lib/mapbox.jquery.js"></script>
+        <script src="js/lib/mapbox.jquery.geocoder.js"></script>
     </head>
 
     <!-- Here we use `data-map` to specify the id of the div the map is in -->
-    <body data-map="map" onload="init();">
+    <body data-map="map">
         <div id="content">
             <div id='branding'></div>
             <div id="about">

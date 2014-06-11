@@ -6,7 +6,6 @@
 
         e.preventDefault();
         var $this = $(this),
-            map = $('#' + $this.parents('[data-map]').data('map')).data('map'),
             query = encodeURIComponent($this.find('input[type=text]').val());
 
         $this.addClass('loading');
@@ -31,10 +30,17 @@
 
             $this.find('#geocode-error').hide();
 
+            map.fitBounds([
+                [resp.boundingbox[1], resp.boundingbox[2]],
+                [resp.boundingbox[0], resp.boundingbox[3]]
+            ], {maxZoom: map.getZoom()});
+
+            /*
             map.setExtent([
                 { lat: resp.boundingbox[1], lon: resp.boundingbox[2] },
                 { lat: resp.boundingbox[0], lon: resp.boundingbox[3] }
             ]);
+            */
 
             if (!map.getLayer('geocode')) {
                 var layer = mapbox.markers.layer().named('geocode');
