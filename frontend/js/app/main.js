@@ -9,6 +9,7 @@ var mapblueAPI = 'http://mapblue.org/lookup'
 var stateHouseLatitude = 39.768732;
 var stateHouseLongitude = -86.162612;
 var mapboxTileJSON = 'https://a.tiles.mapbox.com/v3/examples.map-20v6611k,mapbox.dc-property-values.jsonp?secure';
+var loadedBlocks = [];
 
 function getDemProbability(over18, black, hispanic, otherRace, unmarried,
                            childless) {
@@ -41,6 +42,19 @@ function buildAPIURL(lat1, lon1, lat2, lon2) {
                         '&lon2=' + lon2;
 }
 
+function getMapCoordinates() {
+    var bounds = map.getBounds();
+    var northEast = bounds.getNorthEast();
+    var southWest = bounds.getSouthWest();
+
+    return {
+        lat1: northEast.lat,
+        lon1: northEast.lng,
+        lat2: southWest.lat,
+        lon2: southWest.lng
+    };
+}
+
 function blockStyler(block) {
     var demProbability = getBlockDemProbability(block);
 
@@ -67,22 +81,32 @@ function blockStyler(block) {
     };
 }
 
-function getMapCoordinates() {
-    var bounds = map.getBounds();
-    var northEast = bounds.getNorthEast();
-    var southWest = bounds.getSouthWest();
-
-    return {
-        lat1: northEast.lat,
-        lon1: northEast.lng,
-        lat2: southWest.lat,
-        lon2: southWest.lng
-    };
+function blockFilter(block) {
+    if (loadedBlocks.indexOf(block.id) == -1) {
+        loadedBlocks.push(block.id);
+        return true;
+    }
+    return false;
 }
 
 function loadBlocks() {
     $.getJSON(mapblueAPI, getMapCoordinates(), function(data) {
-        L.geoJson(data, { style: blockStyler }).addTo(map);
+        var geoJSON = map.featureLayer.getGeoJSON();
+
+        if (!geoJSON) {
+            L.geoJson(data, {
+                style: blockStyler,
+                filter: blockFilter
+            }).addTo(map);
+        }
+        else {
+            geoJSON.addData(data);
+        }
+
+        // L.geoJson(data, { style: blockStyler }).addTo(map);
+
+        // L.geoJson(data, { style: blockStyler }).addTo(map);
+        // map.featureLayer = L.geoJson(data, { style: blockStyler });
     });
 }
 
