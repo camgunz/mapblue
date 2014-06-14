@@ -122,22 +122,16 @@ function updateCoefficients() {
     regressionConstant = parseFloat($('#regressionConstant').val());
 }
 
-function setBlocks() {
-    if (geoJSONLayer) {
-        geoJSONLayer.addData(geoJSONData);
-    }
-}
-
 function loadBlocks() {
     $.getJSON(mapblueAPI, getMapCoordinates(), function(data) {
         geoJSONData = data;
-        setBlocks();
+        geoJSONLayer.addData(geoJSONData);
     });
 }
 
 function reloadBlocks(e) {
     updateCoefficients();
-    setBlocks();
+    geoJSONLayer.setStyle(blockStyler);
     console.log(geoJSONLayer);
 }
 
@@ -199,11 +193,18 @@ function init() {
     $('#childlessCoeff').val(childlessCoeff);
     $('#regressionConstant').val(regressionConstant);
 
+    $('#regression_knobs').hide();
+    $('#regression_button').click(function(e) {
+        $('#regression_knobs').animate({width: 'toggle'});
+    });
+
     $('#map').mapbox(mapboxTileJSON, {
         center: [stateHouseLatitude, stateHouseLongitude],
         zoom: 16,
         maxZoom: 18,
     }).on('moveend', loadBlocks);
+
+    getMap().zoomControl.setPosition('topright');
 
     geoJSONLayer = L.geoJson(geoJSONData, {
         style: blockStyler,
