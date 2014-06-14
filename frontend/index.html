@@ -16,9 +16,6 @@
         <script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.3/mapbox.js'>
         </script>
         <script src="js/lib/reqwest.min.js"></script>
-        <!--
-        <script src="js/lib/mapbox.share.js"></script>
-        -->
         <script src="js/lib/wax.ext.js"></script>
         <script src="js/lib/mapbox.jquery.js"></script>
         <script src="js/lib/mapbox.jquery.geocoder.js"></script>
@@ -29,9 +26,8 @@
     <!-- Here we use `data-map` to specify the id of the div the map is in -->
     <body data-map="map">
         <div id="content">
-            <div id='branding'></div>
-            <div id="about">
-                <h1>Map Blue</h1>
+            <div id='branding'>
+                <div id='title'>Map Blue</div>
                 <div data-control="geocode" id="search">
                     <form class="geocode">
                         <input placeholder="Search for an address" type="text">
@@ -40,12 +36,38 @@
                     </form>
                 </div>
             </div>
+            <div id="block_info">
+                <h2 id="block_name">Block</h2>
+                <label for="block_population">Over 18:</label>
+                <span id="block_population"></span>
+                <br>
+                <label for="block_black">African-Americans:</label>
+                <span id="block_black"></span>
+                <br>
+                <label for="block_hispanic">Hispanics:</label>
+                <span id="block_hispanic"></span>
+                <br>
+                <label for="block_other_race">Other:</label>
+                <span id="block_other_race"></span>
+                <br>
+                <label for="block_white">White:</label>
+                <span id="block_white"></span>
+                <br>
+                <label for="block_unmarried">Unmarried:</label>
+                <span id="block_unmarried"></span>
+                <br>
+                <label for="block_childless">No Children:</label>
+                <span id="block_childless"></span>
+                <br>
+                <label for="block_democratic">Democratic:</label>
+                <span id="block_democratic"></span>
+            </div>
         </div>
         <div id="projects" class="layers">
             <a href="#" class="hide">Regression Coefficients</a>
             <div class="content">
                 <a href="#">
-                    African American
+                    African-American
                     <input class="textbox" type="text" id="blackCoeff" value=""
                            onKeyUp="reloadBlocks()" />
                 </a>
@@ -83,7 +105,6 @@
                 <a class="close" onClick="hideMenu();">Close</a>
                 <br />
             </div>
-            <a href="#" class="votes">Likely Democratic Votes</a>
         </div>
         <div id="map" class="map"></div>
     </body>

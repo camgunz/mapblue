@@ -71,6 +71,18 @@ h1 {
     font-size: 2em;
 }
 
+#title {
+    font-family: 'OswaldBook', "Arial Narrow", sans-serif;
+    line-height: 1em;
+    font-size: 2em;
+}
+
+h2 {
+    font-family: 'OswaldBook', "Arial Narrow", sans-serif;
+    line-height: 1em;
+    font-size: 1.5em;
+}
+
 a {
     color:#369;
     text-decoration:none;
@@ -99,20 +111,9 @@ body > div {
     z-index: 0;
 }
 
-#branding {
-    position: absolute;
-    height: 145px;
-    width: 150px;
-    bottom: 11px;
-    left: 0px;
-    float: left;
-    margin-top: 0px;
-    background: url(../img/blah.png) 30px 60px no-repeat;
-}
-
 #content {
     position: absolute;
-    height: 120px;
+    height: 210px;
     width: 100%;
     bottom: 0px;
     background: rgb(255,255,255); /* old ie */
@@ -123,11 +124,27 @@ body > div {
     z-index: 2;
 }
 
-#about {
-    margin-left: 150px;
-    width: 689px;
+#branding {
+    position: absolute;
     float: left;
-    padding: 0 20px;
+    width: 300px;
+    height: 210px;
+    top: 20px;
+    left: 20px;
+}
+
+#search {
+    margin-top: 20px;
+}
+
+#block_info {
+    position: absolute;
+    float: left;
+    width: 400px;
+    height: 210px;
+    padding-top: 20px;
+    margin-left: 300px;
+    padding-left: 20px;
     border-left: 1px solid #bbb;
 }
 
