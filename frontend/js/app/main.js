@@ -242,7 +242,7 @@ function init() {
     L.tileLayer(tileJSON, {
         attribution: tileJSONAttribution,
         subdomains: 'abcd',
-        minZoom: 4,
+        minZoom: 13,
         maxZoom: 18
     }).addTo(map);
 
