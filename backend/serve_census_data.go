@@ -52,6 +52,7 @@ const blockQueryTemplate = "SELECT tb.tabblock_id, tb.name, " +
 	"WHERE ST_Intersects(the_geom, ST_GeomFromEWKT(" +
 	"'SRID=4269;MULTIPOLYGON(((%s %s, %s %s, %s %s, %s %s, %s %s)))'" +
 	")) " +
+	"AND gl.sumlev IN ('101', '750', '755') " +
 	"AND gl.intptlon = tb.intptlon AND gl.intptlat = tb.intptlat " +
 	"AND p11.logrecno = gl.logrecno AND p16.logrecno = gl.logrecno " +
 	"AND p19.logrecno = gl.logrecno AND p29.logrecno = gl.logrecno;"
