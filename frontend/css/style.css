@@ -137,6 +137,21 @@ body > div {
     margin-top: 20px;
 }
 
+#shade_type_form {
+    position: absolute;
+    float: left;
+    top: 12px;
+    margin-left: 300px;
+    width: 180px;
+    font-family: 'OswaldBook', "Arial Narrow", sans-serif;
+    line-height: 1em;
+    font-size: 1em;
+}
+
+#shade_type_form input {
+    margin-bottom: 12px;
+}
+
 #block_info {
     position: absolute;
     float: left;

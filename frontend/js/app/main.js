@@ -23,7 +23,24 @@ var tileJSONAttribution =
         '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
 var blockIDs = [];
 
-function calculateBlockStatistics(block) {
+var totalVoters = 0;
+var demVoters = 0;
+var repVoters = 0;
+var maxRepVoters = 0;
+var maxDemVoters = 0;
+var shadeOnVoteCounts = true;
+
+function resetVoteTotals() {
+    totalVoters = 0;
+    demVoters = 0;
+    repVoters = 0;
+    maxRepVoters = 0;
+    maxDemVoters = 0;
+}
+
+function calculateBlockStatistics(layer) {
+    var block = layer.feature;
+
     var over18 = block.properties.over18;
     var black = block.properties.black;
     var hispanic = block.properties.hispanic;
@@ -59,19 +76,30 @@ function calculateBlockStatistics(block) {
             (otherRaceCoeff * block.properties.otherRacePct) +
             (unmarriedCoeff * block.properties.unmarriedPct) +
             (childlessCoeff * block.properties.childlessPct);
+
+    totalVoters += block.properties.over18;
+
     if (block.properties.demPct < .50) {
         block.properties.democrat = -(over18 * block.properties.demPct);
+        repVoters += -(block.properties.democrat);
+        if (-(block.properties.democrat) > maxRepVoters) {
+            maxRepVoters = -(block.properties.democrat);
+        }
     }
     else {
         block.properties.democrat = over18 * block.properties.demPct;
+        demVoters += block.properties.democrat;
+        if (block.properties.democrat > maxDemVoters) {
+            maxDemVoters = block.properties.democrat;
+        }
     }
 }
 
 function buildAPIURL(lat1, lon1, lat2, lon2) {
     return mapblueAPI + '?lat1=' + lat1 +
-            '&lon1=' + lon1 +
-            '&lat2=' + lat2 +
-            '&lon2=' + lon2;
+                        '&lon1=' + lon1 +
+                        '&lat2=' + lat2 +
+                        '&lon2=' + lon2;
 }
 
 function getMapCoordinates() {
@@ -88,11 +116,11 @@ function getMapCoordinates() {
 }
 
 function blockStyler(block) {
+    var fillOpacity = 0.0;
+
     if (typeof block.properties.clicked == "undefined") {
         block.properties.clicked = false;
     }
-
-    calculateBlockStatistics(block);
 
     if (block.properties.over18 == 0) {
         return {
@@ -104,17 +132,39 @@ function blockStyler(block) {
     }
 
     if (block.properties.demPct < .5) {
+        if (shadeOnVoteCounts) {
+            fillOpacity = -(block.properties.democrat / maxRepVoters);
+        }
+        else {
+            fillOpacity = 1.0 - block.properties.demPct;
+        }
+
+        if (fillOpacity < .15) {
+            fillOpacity = .15;
+        }
+
         return {
             fillColor: '#BB4444',
-            fillOpacity: 1.0 - block.properties.demPct,
+            fillOpacity: fillOpacity,
             stroke: block.properties.clicked,
             weight: 2
         };
     }
 
+    if (shadeOnVoteCounts) {
+        fillOpacity = block.properties.democrat / maxDemVoters;
+    }
+    else {
+        fillOpacity = block.properties.demPct;
+    }
+
+    if (fillOpacity < .15) {
+        fillOpacity = .15;
+    }
+
     return {
         fillColor: '#4488CC',
-        fillOpacity: block.properties.demPct,
+        fillOpacity: fillOpacity,
         stroke: block.properties.clicked,
         weight: 2
     };
@@ -132,11 +182,15 @@ function updateCoefficients() {
 function loadBlocks() {
     $.getJSON(mapblueAPI, getMapCoordinates(), function(data) {
         geoJSONLayer.addData(data);
+        resetVoteTotals();
+        geoJSONLayer.eachLayer(calculateBlockStatistics);
+        geoJSONLayer.setStyle(blockStyler);
     });
 }
 
 function reloadBlocks(e) {
     updateCoefficients();
+    geoJSONLayer.eachLayer(calculateBlockStatistics);
     geoJSONLayer.setStyle(blockStyler);
 }
 
@@ -155,9 +209,11 @@ function blockClicked(e) {
     else {
         e.target.feature.properties.clicked = true;
     }
+
     e.target.setStyle({
         stroke: e.target.feature.properties.clicked
     });
+
     if (!L.Browser.ie && !L.Browser.opera) {
         layer.bringToFront();
     }
@@ -166,53 +222,57 @@ function blockClicked(e) {
 function blockMousedOver(e) {
     var ps = e.target.feature.properties;
 
-    console.log(ps);
-
     $('#block_name').html(ps.name);
     $('#block_population').html(ps.over18);
     $('#block_black').html(
-            Math.round(ps.blackPct * 100) + "% (" + Math.round(ps.black) + ")"
-            );
+        Math.round(ps.blackPct * 100) +
+        "% (" + Math.round(ps.black) + ")"
+    );
     $('#block_hispanic').html(
-            Math.round(ps.hispanicPct * 100) + "% (" + Math.round(ps.hispanic) + ")"
-            );
+        Math.round(ps.hispanicPct * 100) +
+        "% (" + Math.round(ps.hispanic) + ")"
+    );
     $('#block_other_race').html(
-            Math.round(ps.otherRacePct * 100) + "% (" + Math.round(ps.otherRace) + ")"
-            );
+        Math.round(ps.otherRacePct * 100) +
+        "% (" + Math.round(ps.otherRace) + ")"
+    );
     $('#block_white').html(
-            Math.round(ps.whitePct * 100) + "% (" + Math.round(ps.white) + ")"
-            );
+        Math.round(ps.whitePct * 100) +
+        "% (" + Math.round(ps.white) + ")"
+    );
     $('#block_unmarried').html(
-            Math.round(ps.unmarriedPct * 100) + "% (" + Math.round(ps.unmarried) + ")"
-            );
+        Math.round(ps.unmarriedPct * 100) +
+        "% (" + Math.round(ps.unmarried) + ")"
+    );
     $('#block_childless').html(
-            Math.round(ps.childlessPct * 100) + "% (" + Math.round(ps.childless) + ")"
-            );
+        Math.round(ps.childlessPct * 100) +
+        "% (" + Math.round(ps.childless) + ")"
+    );
     $('#block_democratic').html(
-            Math.round(ps.demPct * 100) + "% (" + Math.round(ps.democrat) + ")"
-            );
+        Math.round(ps.demPct * 100) +
+        "% (" + Math.round(ps.democrat) + ")"
+    );
 }
 
 function searchForAddress() {
     $.getJSON(
-            geocoderAPI,
-            {format: 'json', q: $('#geocoder_address').val()},
-    function(data) {
-        if (data.length == 0) {
-            $('#geocoder_error').html("Address not found");
-            return;
-        }
+        geocoderAPI,
+        {format: 'json', q: $('#geocoder_address').val()},
+        function(data) {
+            if (data.length == 0) {
+                $('#geocoder_error').html("Address not found");
+                return;
+            }
 
-        var geolocation = data[0];
+            var geolocation = data[0];
 
-        console.log(geolocation);
-        if (geolocation.lat && geolocation.lon) {
-            map.setView([geolocation.lat, geolocation.lon]);
+            if (geolocation.lat && geolocation.lon) {
+                map.setView([geolocation.lat, geolocation.lon]);
+            }
+            else {
+                $('#geocoder_error').html("Invalid geocoder response");
+            }
         }
-        else {
-            $('#geocoder_error').html("Invalid geocoder response");
-        }
-    }
     );
 }
 
@@ -230,18 +290,33 @@ function init() {
         }
     });
     $('#geocoder_submit').click(searchForAddress);
+
     $('#regression_knobs').hide();
     $('#regression_button').click(function(e) {
         $('#regression_knobs').animate({width: 'toggle'});
     });
+
     $('#votes_knobs').hide();
     $('#votes_button').click(function(e) {
         $('#votes_knobs').animate({width: 'toggle'});
     });
 
+    $('.shade_type_input').click(function(e) {
+        var radioButton = $(e.target);
+        var shadeValue = radioButton.attr('value');
+
+        if (shadeValue == 'vote_counts') {
+            shadeOnVoteCounts = true;
+        }
+        else {
+            shadeOnVoteCounts = false;
+        }
+        reloadBlocks();
+    });
+
     map = L.map('map').setView(
-            [stateHouseLatitude, stateHouseLongitude], 16
-            );
+        [stateHouseLatitude, stateHouseLongitude], 16
+    );
     map.on('moveend', loadBlocks);
 
     L.tileLayer(tileJSON, {
@@ -254,7 +329,6 @@ function init() {
     map.zoomControl.setPosition('topright');
 
     geoJSONLayer = L.geoJson(null, {
-        style: blockStyler,
         filter: blockFilter,
         onEachFeature: function(block, layer) {
             layer.on({
