@@ -17,61 +17,62 @@
         </script>
         <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
         <script src="js/lib/leaflet-providers.js"></script>
-        </script>
-        <script src="js/lib/reqwest.min.js"></script>
-        <script src="js/lib/wax.ext.js"></script>
-        <script src="js/app/main.js"></script>
-    </head>
+    </script>
+    <script src="js/lib/reqwest.min.js"></script>
+    <script src="js/lib/wax.ext.js"></script>
+    <script src="js/app/main.js"></script>
+</head>
 
-    <!-- Here we use `data-map` to specify the id of the div the map is in -->
-    <body data-map="map">
-        <div id="content">
-            <div id='branding'>
-                <div id='title'>Map Blue</div>
-                <div id="geocoder">
-                    <input type="text" id="geocoder_address"
-                           placeholder="Search for an address" />
-                    <input type="submit" id="geocoder_submit"/>
-                    <div id="geocoder_error"></div>
-                </div>
+<!-- Here we use `data-map` to specify the id of the div the map is in -->
+<body data-map="map">
+    <div id="content">
+        <div id='branding'>
+            <div id='title'>Map Blue</div>
+            <div id="geocoder">
+                <input type="text" id="geocoder_address"
+                       placeholder="Search for an address" />
+                <input type="submit" id="geocoder_submit"/>
+                <div id="geocoder_error"></div>
             </div>
         </div>
-        <div id="regression_button">Regression Coefficients</div>
-        <div id="regression_knobs">
-            <div class="regression_knob">
-                <div class="regression_knob_label">African-American</div>
-                <input class="textbox" type="text" id="blackCoeff" value=""
-                       onKeyUp="reloadBlocks()" />
-            </div>
-            <div class="regression_knob">
-                <div class="regression_knob_label">Hispanic</div>
-                <input class="textbox" type="text" id="hispanicCoeff" value=""
-                       onKeyUp="reloadBlocks()" />
-            </div>
-            <div class="regression_knob">
-                <div class="regression_knob_label">Other Race</div>
-                <input class="textbox" type="text" id="otherRaceCoeff" value=""
-                       onKeyUp="reloadBlocks()" />
-            </div>
-            <div class="regression_knob">
-                <div class="regression_knob_label">Unmarried</div>
-                <input class="textbox" type="text" id="unmarriedCoeff" value=""
-                       onKeyUp="reloadBlocks()" />
-            </div>
-            <div class="regression_knob">
-                <div class="regression_knob_label">No Children</div>
-                <input class="textbox" type="text" id="childlessCoeff" value=""
-                       onKeyUp="reloadBlocks()" />
-            </div>
-            <div class="regression_knob">
-                <div class="regression_knob_label">Regression Constant</div>
-                <input class="textbox" type="text" id="regressionConstant" value=""
-                       onKeyUp="reloadBlocks()" />
-            </div>
+    </div>
+    <div id="regression_button">Regression Coefficients</div>
+    <div id="regression_knobs">
+        <div class="regression_knob">
+            <div class="regression_knob_label">African-American</div>
+            <input class="textbox" type="text" id="blackCoeff" value=""
+                   onKeyUp="reloadBlocks()" />
         </div>
-        <!--
-        <div id="block_info">
-            <h2 id="block_name">Block</h2>
+        <div class="regression_knob">
+            <div class="regression_knob_label">Hispanic</div>
+            <input class="textbox" type="text" id="hispanicCoeff" value=""
+                   onKeyUp="reloadBlocks()" />
+        </div>
+        <div class="regression_knob">
+            <div class="regression_knob_label">Other Race</div>
+            <input class="textbox" type="text" id="otherRaceCoeff" value=""
+                   onKeyUp="reloadBlocks()" />
+        </div>
+        <div class="regression_knob">
+            <div class="regression_knob_label">Unmarried</div>
+            <input class="textbox" type="text" id="unmarriedCoeff" value=""
+                   onKeyUp="reloadBlocks()" />
+        </div>
+        <div class="regression_knob">
+            <div class="regression_knob_label">No Children</div>
+            <input class="textbox" type="text" id="childlessCoeff" value=""
+                   onKeyUp="reloadBlocks()" />
+        </div>
+        <div class="regression_knob">
+            <div class="regression_knob_label">Regression Constant</div>
+            <input class="textbox" type="text" id="regressionConstant" value=""
+                   onKeyUp="reloadBlocks()" />
+        </div>
+    </div>
+    <div id="votes_button">Block Statistics</div>
+    <div id="votes_knobs">
+        <div class="votes_knob">
+            <h2 id="block_name">Block</h2><br/>
             <label for="block_population">Over 18:</label>
             <span id="block_population"></span>
             <br>
@@ -96,8 +97,8 @@
             <label for="block_democratic">Democratic:</label>
             <span id="block_democratic"></span>
         </div>
-        -->
-        <div id="map" class="map"></div>
-    </body>
+    </div>
+    <div id="map" class="map"></div>
+</body>
 </html>
 

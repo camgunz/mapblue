@@ -148,6 +148,47 @@ body > div {
     border-left: 1px solid #BBB;
 }
 
+#votes_button {
+    position: absolute;
+    font: 1em/1.5em 'OswaldBook', 'Arial Narrow', sans-serif;
+    float: left;
+    top: 120px;
+    width: 125px;
+    padding: 10px;
+    padding-top: 13px;
+    padding-bottom: 14px;
+    border: 1px solid #777;
+    border-left: 5px solid #777;
+    background: white;
+    color: #333;
+    text-align: center;
+}
+
+#votes_knobs {
+    float: left;
+    top: 30px;
+    max-height: 71px;
+}
+
+.votes_knob {
+    font: 1em/1.5em 'OswaldBook', 'Arial Narrow', sans-serif;
+    float: left;
+    top: 30px;
+    width: 125px;
+    padding: 10px;
+    border: 1px solid #777;
+    border-left: 5px solid #777;
+    background: white;
+    color: #333;
+    text-align: left;
+    margin-left: 5px;
+}
+
+#votes_button:hover {
+    background: #2da0ef;
+    color: white;
+}
+
 #regression_button {
     font: 1em/1.5em 'OswaldBook', 'Arial Narrow', sans-serif;
     float: left;
