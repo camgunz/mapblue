@@ -113,7 +113,7 @@ body > div {
 
 #content {
     position: absolute;
-    height: 210px;
+    height: 110px;
     width: 100%;
     bottom: 0px;
     background: rgb(255,255,255); /* old ie */
@@ -161,7 +161,6 @@ body > div {
     background: white;
     color: #333;
     text-align: center;
-    /* height: 49px; */
 }
 
 #regression_knobs {
@@ -208,7 +207,11 @@ body > div {
     margin-bottom: 20px;
 }
 
-form.geocode input[type=text] {
+#geocoder {
+    margin-top: 15px;
+}
+
+#geocoder input[type=text] {
     font-size: .85em;
     color: #333;
     height: 18px;
@@ -220,7 +223,7 @@ form.geocode input[type=text] {
     border: 1px solid  #ccc;
 }
 
-form.geocode input[type=submit] {
+#geocoder input[type=submit] {
     background: #2da0ef url(../img/search.png) no-repeat -0px -0px;
     text-indent: -9999px;
     width: 30px;
@@ -233,10 +236,10 @@ form.geocode input[type=submit] {
     cursor: pointer;
 }
 
-form.geocode input[type=submit]:hover { background-color:#333; }
-form.geocode input[type=submit]:active { background-color:#000; }
+#geocoder input[type=submit]:hover { background-color:#333; }
+#geocoder input[type=submit]:active { background-color:#000; }
 
-form.geocode.loading input[type=submit] {
+#geocoder.loading input[type=submit] {
     background: url(img/ajax-loader.gif) no-repeat 50% 50%;
     border-color:#bbb;
     background-color:#ddd;

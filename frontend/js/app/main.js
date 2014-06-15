@@ -1,15 +1,25 @@
-var geoJSONData = null;
+var map = null;
 var geoJSONLayer = null;
+
 var blackCoeff = 0.4501479;
 var hispanicCoeff = 0.077551;
 var otherRaceCoeff = 0.1358834;
 var unmarriedCoeff = 0.0911239;
 var childlessCoeff = 0.115441;
 var regressionConstant = 0.3638054;
+
 var mapblueAPI = 'http://mapblue.org/lookup'
+var geocoderAPI = 'http://nominatim.openstreetmap.org/search'
 var stateHouseLatitude = 39.768732;
 var stateHouseLongitude = -86.162612;
-var mapboxTileJSON = 'https://a.tiles.mapbox.com/v3/examples.map-20v6611k,mapbox.dc-property-values.jsonp?secure';
+// var tileJSON = 'https://a.tiles.mapbox.com/v3/examples.map-20v6611k,mapbox.dc-property-values.jsonp?secure';
+var tileJSON = 'http://{s}.tile.stamen.com/terrain/{z}/{x}/{y}.png'
+var tileJSONAttribution = 
+    'Map tiles by <a href="http://stamen.com">Stamen Design</a>, ' +
+    '<a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> ' +
+    '&mdash; Map data &copy; ' +
+    '<a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+    '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
 var blockIDs = [];
 
 function calculateBlockStatistics(block) {
@@ -63,12 +73,8 @@ function buildAPIURL(lat1, lon1, lat2, lon2) {
                         '&lon2=' + lon2;
 }
 
-function getMap() {
-    return $('#map').mapbox();
-}
-
 function getMapCoordinates() {
-    var bounds = getMap().getBounds();
+    var bounds = map.getBounds();
     var northEast = bounds.getNorthEast();
     var southWest = bounds.getSouthWest();
 
@@ -124,15 +130,13 @@ function updateCoefficients() {
 
 function loadBlocks() {
     $.getJSON(mapblueAPI, getMapCoordinates(), function(data) {
-        geoJSONData = data;
-        geoJSONLayer.addData(geoJSONData);
+        geoJSONLayer.addData(data);
     });
 }
 
 function reloadBlocks(e) {
     updateCoefficients();
     geoJSONLayer.setStyle(blockStyler);
-    console.log(geoJSONLayer);
 }
 
 function blockFilter(block) {
@@ -158,10 +162,6 @@ function blockClicked(e) {
     }
 }
 
-function toPercent(s) {
-    return Math.round(s * 100)
-}
-
 function blockMousedOver(e) {
     var ps = e.target.feature.properties;
 
@@ -169,20 +169,50 @@ function blockMousedOver(e) {
 
     $('#block_name').html(ps.name);
     $('#block_population').html(ps.over18);
-    $('#block_black')
-        .html(toPercent(ps.blackPct) + "% (" + Math.round(ps.black) + ")");
-    $('#block_hispanic')
-        .html(toPercent(ps.hispanicPct) + "% (" + Math.round(ps.hispanic) + ")");
-    $('#block_other_race')
-        .html(toPercent(ps.otherRacePct) + "% (" + Math.round(ps.otherRace) + ")");
-    $('#block_white')
-        .html(toPercent(ps.whitePct) + "% (" + Math.round(ps.white) + ")");
-    $('#block_unmarried')
-        .html(toPercent(ps.unmarriedPct) + "% (" + Math.round(ps.unmarried) + ")");
-    $('#block_childless')
-        .html(toPercent(ps.childlessPct) + "% (" + Math.round(ps.childless) + ")");
-    $('#block_democratic')
-        .html(toPercent(ps.demPct) + "% (" + Math.round(ps.democrat) + ")");
+    $('#block_black').html(
+        Math.round(ps.blackPct * 100) + "% (" + Math.round(ps.black) + ")"
+    );
+    $('#block_hispanic').html(
+        Math.round(ps.hispanicPct * 100) + "% (" + Math.round(ps.hispanic) + ")"
+    );
+    $('#block_other_race').html(
+        Math.round(ps.otherRacePct * 100) + "% (" + Math.round(ps.otherRace) + ")"
+    );
+    $('#block_white').html(
+        Math.round(ps.whitePct * 100) + "% (" + Math.round(ps.white) + ")"
+    );
+    $('#block_unmarried').html(
+        Math.round(ps.unmarriedPct * 100) + "% (" + Math.round(ps.unmarried) + ")"
+    );
+    $('#block_childless').html(
+        Math.round(ps.childlessPct * 100) + "% (" + Math.round(ps.childless) + ")"
+    );
+    $('#block_democratic').html(
+        Math.round(ps.demPct * 100) + "% (" + Math.round(ps.democrat) + ")"
+    );
+}
+
+function searchForAddress() {
+    $.getJSON(
+        geocoderAPI,
+        {format: 'json', q: $('#geocoder_address').val()},
+        function(data) {
+            if (data.length == 0) {
+                $('#geocoder_error').html("Address not found");
+                return;
+            }
+
+            var geolocation = data[0];
+
+            console.log(geolocation);
+            if (geolocation.lat && geolocation.lon) {
+                map.setView([geolocation.lat, geolocation.lon]);
+            }
+            else {
+                $('#geocoder_error').html("Invalid geocoder response");
+            }
+        }
+    );
 }
 
 function init() {
@@ -193,20 +223,32 @@ function init() {
     $('#childlessCoeff').val(childlessCoeff);
     $('#regressionConstant').val(regressionConstant);
 
+    $('#geocoder_address').keypress(function (e) {
+        if (e.which == 13) {
+            searchForAddress();
+        }
+    });
+    $('#geocoder_submit').click(searchForAddress);
     $('#regression_knobs').hide();
     $('#regression_button').click(function(e) {
         $('#regression_knobs').animate({width: 'toggle'});
     });
 
-    $('#map').mapbox(mapboxTileJSON, {
-        center: [stateHouseLatitude, stateHouseLongitude],
-        zoom: 16,
-        maxZoom: 18,
-    }).on('moveend', loadBlocks);
+    map = L.map('map').setView(
+        [stateHouseLatitude, stateHouseLongitude], 16
+    );
+    map.on('moveend', loadBlocks);
 
-    getMap().zoomControl.setPosition('topright');
+    L.tileLayer(tileJSON, {
+        attribution: tileJSONAttribution,
+        subdomains: 'abcd',
+        minZoom: 4,
+        maxZoom: 18
+    }).addTo(map);
 
-    geoJSONLayer = L.geoJson(geoJSONData, {
+    map.zoomControl.setPosition('topright');
+
+    geoJSONLayer = L.geoJson(null, {
         style: blockStyler,
         filter: blockFilter,
         onEachFeature: function(block, layer) {
@@ -216,7 +258,7 @@ function init() {
             })
         }
     });
-    geoJSONLayer.addTo(getMap());
+    geoJSONLayer.addTo(map);
     loadBlocks();
 }
 

@@ -9,16 +9,17 @@
         <link rel="stylesheet" href="fonts/fonts.css" type="text/css" />
         <link rel="stylesheet" href="css/style.css" type="text/css" />
         <link rel="stylesheet" href="css/mapbox.share.css" type="text/css" />
+        <link rel="stylesheet"
+              href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
         <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
         </script>
-        <script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.3/mapbox.js'>
+        <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+        <script src="js/lib/leaflet-providers.js"></script>
         </script>
         <script src="js/lib/reqwest.min.js"></script>
         <script src="js/lib/wax.ext.js"></script>
-        <script src="js/lib/mapbox.jquery.js"></script>
-        <script src="js/lib/mapbox.jquery.geocoder.js"></script>
         <script src="js/app/main.js"></script>
     </head>
 
@@ -27,39 +28,12 @@
         <div id="content">
             <div id='branding'>
                 <div id='title'>Map Blue</div>
-                <div data-control="geocode" id="search">
-                    <form class="geocode">
-                        <input placeholder="Search for an address" type="text">
-                        <input type="submit" />
-                        <div id="geocode-error"></div>
-                    </form>
+                <div id="geocoder">
+                    <input type="text" id="geocoder_address"
+                           placeholder="Search for an address" />
+                    <input type="submit" id="geocoder_submit"/>
+                    <div id="geocoder_error"></div>
                 </div>
-            </div>
-            <div id="block_info">
-                <h2 id="block_name">Block</h2>
-                <label for="block_population">Over 18:</label>
-                <span id="block_population"></span>
-                <br>
-                <label for="block_black">African-Americans:</label>
-                <span id="block_black"></span>
-                <br>
-                <label for="block_hispanic">Hispanics:</label>
-                <span id="block_hispanic"></span>
-                <br>
-                <label for="block_other_race">Other:</label>
-                <span id="block_other_race"></span>
-                <br>
-                <label for="block_white">White:</label>
-                <span id="block_white"></span>
-                <br>
-                <label for="block_unmarried">Unmarried:</label>
-                <span id="block_unmarried"></span>
-                <br>
-                <label for="block_childless">No Children:</label>
-                <span id="block_childless"></span>
-                <br>
-                <label for="block_democratic">Democratic:</label>
-                <span id="block_democratic"></span>
             </div>
         </div>
         <div id="regression_button">Regression Coefficients</div>
@@ -94,6 +68,32 @@
                 <input class="textbox" type="text" id="regressionConstant" value=""
                        onKeyUp="reloadBlocks()" />
             </div>
+        </div>
+        <div id="block_info">
+            <h2 id="block_name">Block</h2>
+            <label for="block_population">Over 18:</label>
+            <span id="block_population"></span>
+            <br>
+            <label for="block_black">African-Americans:</label>
+            <span id="block_black"></span>
+            <br>
+            <label for="block_hispanic">Hispanics:</label>
+            <span id="block_hispanic"></span>
+            <br>
+            <label for="block_other_race">Other:</label>
+            <span id="block_other_race"></span>
+            <br>
+            <label for="block_white">White:</label>
+            <span id="block_white"></span>
+            <br>
+            <label for="block_unmarried">Unmarried:</label>
+            <span id="block_unmarried"></span>
+            <br>
+            <label for="block_childless">No Children:</label>
+            <span id="block_childless"></span>
+            <br>
+            <label for="block_democratic">Democratic:</label>
+            <span id="block_democratic"></span>
         </div>
         <div id="map" class="map"></div>
     </body>
