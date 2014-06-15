@@ -307,8 +307,9 @@ body > div {
 #geocoder input[type=submit]:hover { background-color:#333; }
 #geocoder input[type=submit]:active { background-color:#000; }
 
-#geocoder.loading input[type=submit] {
-    background: url(img/ajax-loader.gif) no-repeat 50% 50%;
+#geocoder_loading {
+    display: none;
+    background: url(../img/ajax-loader.gif) no-repeat 50% 50%;
     border-color:#bbb;
     background-color:#ddd;
     box-shadow:inset rgba(0,0,0,0.1) 0px 1px 3px;
@@ -316,7 +317,7 @@ body > div {
     -webkit-box-shadow:inset rgba(0,0,0,0.1) 0px 1px 3px;
 }
 
-#geocode-error {
+#geocoder_error {
     display: none;
     float: left;
     position: relative;

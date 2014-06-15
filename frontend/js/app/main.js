@@ -15,8 +15,9 @@ var strokeColor = '#FFFF00';
 var strokeWeight = 5;
 
 var mapblueAPI = 'http://mapblue.org/lookup'
-//var mapblueAPI = 'http://totaltrash.org/mapblue/lookup'
-var geocoderAPI = 'http://nominatim.openstreetmap.org/search'
+var openGeocoderAPI = 'http://nominatim.openstreetmap.org/search'
+var censusGeocoderAPI =
+    'http://geocoding.geo.census.gov/geocoder/locations/onelineaddress'
 var stateHouseLatitude = 39.768732;
 var stateHouseLongitude = -86.162612;
 // var tileJSON = 'https://a.tiles.mapbox.com/v3/examples.map-20v6611k,mapbox.dc-property-values.jsonp?secure';
@@ -277,26 +278,56 @@ function blockMousedOver(e) {
     );
 }
 
-function searchForAddress() {
-    $.getJSON(
-        geocoderAPI,
-        {format: 'json', q: $('#geocoder_address').val()},
-        function(data) {
-            if (data.length == 0) {
-                $('#geocoder_error').html("Address not found");
-                return;
-            }
+function handleOpenGeocoderResponse(data) {
+    $('#geocoder_loading').hide();
+    if (data.length == 0) {
+        $('#geocoder_error').html("Address not found");
+        return;
+    }
 
-            var geolocation = data[0];
+    var geolocation = data[0];
 
-            if (geolocation.lat && geolocation.lon) {
-                map.setView([geolocation.lat, geolocation.lon]);
-            }
-            else {
-                $('#geocoder_error').html("Invalid geocoder response");
-            }
-        }
-    );
+    if (geolocation.lat && geolocation.lon) {
+        map.setView([geolocation.lat, geolocation.lon]);
+    }
+    else {
+        $('#geocoder_error').html("Invalid geocoder response");
+        $('#geocoder_error').show();
+    }
+}
+
+function searchOpenForAddress() {
+    $('#geocoder_error').hide();
+    $('#geocoder_loading').show();
+    $.getJSON(openGeocoderAPI, {
+        format: 'json',
+        q: $('#geocoder_address').val()
+    }, handleOpenGeocoderResponse);
+}
+
+function handleCensusGeocoderResponse(data) {
+    $('#geocoder_loading').hide();
+    if ((!data) || (!data.addressMatches) || data.addressMatches.length == 0) {
+        $('#geocoder_error').html("Address not found");
+        $('#geocoder_error').show();
+        return;
+    }
+
+    var coordinates = data.addressMatches[0].coordinates;
+    var lat = coordinates.y;
+    var lon = coordinates.x;
+
+    map.setView([lat, lon]);
+}
+
+function searchCensusForAddress() {
+    $('#geocoder_error').hide();
+    $('#geocoder_loading').show();
+    $.getJSON(censusGeocoderAPI, {
+        format: 'jsonp',
+        benchmark: 'Public_AR_Current',
+        address: $('#geocoder_address').val()
+    }, handleCensusGeocoderResponse);
 }
 
 function init() {
@@ -309,10 +340,12 @@ function init() {
 
     $('#geocoder_address').keypress(function(e) {
         if (e.which == 13) {
-            searchForAddress();
+            searchOpenForAddress();
         }
     });
-    $('#geocoder_submit').click(searchForAddress);
+    $('#geocoder_submit').click(searchOpenForAddress);
+    $('#geocoder_loading').hide();
+    $('#geocoder_error').hide();
 
     $('#regression_knobs').hide();
     $('#regression_button').click(function(e) {
