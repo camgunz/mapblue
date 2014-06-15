@@ -9,17 +9,18 @@ var childlessCoeff = 0.115441;
 var regressionConstant = 0.3638054;
 
 var mapblueAPI = 'http://mapblue.org/lookup'
+//var mapblueAPI = 'http://totaltrash.org/mapblue/lookup'
 var geocoderAPI = 'http://nominatim.openstreetmap.org/search'
 var stateHouseLatitude = 39.768732;
 var stateHouseLongitude = -86.162612;
 // var tileJSON = 'https://a.tiles.mapbox.com/v3/examples.map-20v6611k,mapbox.dc-property-values.jsonp?secure';
 var tileJSON = 'http://{s}.tile.stamen.com/terrain/{z}/{x}/{y}.png'
-var tileJSONAttribution = 
-    'Map tiles by <a href="http://stamen.com">Stamen Design</a>, ' +
-    '<a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> ' +
-    '&mdash; Map data &copy; ' +
-    '<a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-    '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
+var tileJSONAttribution =
+        'Map tiles by <a href="http://stamen.com">Stamen Design</a>, ' +
+        '<a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> ' +
+        '&mdash; Map data &copy; ' +
+        '<a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+        '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
 var blockIDs = [];
 
 function calculateBlockStatistics(block) {
@@ -53,11 +54,11 @@ function calculateBlockStatistics(block) {
     block.properties.unmarriedPct = unmarried / over18;
     block.properties.childlessPct = childless / over18;
     block.properties.demPct = regressionConstant +
-        (blackCoeff     * block.properties.blackPct)     +
-        (hispanicCoeff  * block.properties.hispanicPct)  +
-        (otherRaceCoeff * block.properties.otherRacePct) +
-        (unmarriedCoeff * block.properties.unmarriedPct) +
-        (childlessCoeff * block.properties.childlessPct);
+            (blackCoeff * block.properties.blackPct) +
+            (hispanicCoeff * block.properties.hispanicPct) +
+            (otherRaceCoeff * block.properties.otherRacePct) +
+            (unmarriedCoeff * block.properties.unmarriedPct) +
+            (childlessCoeff * block.properties.childlessPct);
     if (block.properties.demPct < .50) {
         block.properties.democrat = -(over18 * block.properties.demPct);
     }
@@ -68,9 +69,9 @@ function calculateBlockStatistics(block) {
 
 function buildAPIURL(lat1, lon1, lat2, lon2) {
     return mapblueAPI + '?lat1=' + lat1 +
-                        '&lon1=' + lon1 +
-                        '&lat2=' + lat2 +
-                        '&lon2=' + lon2;
+            '&lon1=' + lon1 +
+            '&lat2=' + lat2 +
+            '&lon2=' + lon2;
 }
 
 function getMapCoordinates() {
@@ -170,48 +171,48 @@ function blockMousedOver(e) {
     $('#block_name').html(ps.name);
     $('#block_population').html(ps.over18);
     $('#block_black').html(
-        Math.round(ps.blackPct * 100) + "% (" + Math.round(ps.black) + ")"
-    );
+            Math.round(ps.blackPct * 100) + "% (" + Math.round(ps.black) + ")"
+            );
     $('#block_hispanic').html(
-        Math.round(ps.hispanicPct * 100) + "% (" + Math.round(ps.hispanic) + ")"
-    );
+            Math.round(ps.hispanicPct * 100) + "% (" + Math.round(ps.hispanic) + ")"
+            );
     $('#block_other_race').html(
-        Math.round(ps.otherRacePct * 100) + "% (" + Math.round(ps.otherRace) + ")"
-    );
+            Math.round(ps.otherRacePct * 100) + "% (" + Math.round(ps.otherRace) + ")"
+            );
     $('#block_white').html(
-        Math.round(ps.whitePct * 100) + "% (" + Math.round(ps.white) + ")"
-    );
+            Math.round(ps.whitePct * 100) + "% (" + Math.round(ps.white) + ")"
+            );
     $('#block_unmarried').html(
-        Math.round(ps.unmarriedPct * 100) + "% (" + Math.round(ps.unmarried) + ")"
-    );
+            Math.round(ps.unmarriedPct * 100) + "% (" + Math.round(ps.unmarried) + ")"
+            );
     $('#block_childless').html(
-        Math.round(ps.childlessPct * 100) + "% (" + Math.round(ps.childless) + ")"
-    );
+            Math.round(ps.childlessPct * 100) + "% (" + Math.round(ps.childless) + ")"
+            );
     $('#block_democratic').html(
-        Math.round(ps.demPct * 100) + "% (" + Math.round(ps.democrat) + ")"
-    );
+            Math.round(ps.demPct * 100) + "% (" + Math.round(ps.democrat) + ")"
+            );
 }
 
 function searchForAddress() {
     $.getJSON(
-        geocoderAPI,
-        {format: 'json', q: $('#geocoder_address').val()},
-        function(data) {
-            if (data.length == 0) {
-                $('#geocoder_error').html("Address not found");
-                return;
-            }
-
-            var geolocation = data[0];
-
-            console.log(geolocation);
-            if (geolocation.lat && geolocation.lon) {
-                map.setView([geolocation.lat, geolocation.lon]);
-            }
-            else {
-                $('#geocoder_error').html("Invalid geocoder response");
-            }
+            geocoderAPI,
+            {format: 'json', q: $('#geocoder_address').val()},
+    function(data) {
+        if (data.length == 0) {
+            $('#geocoder_error').html("Address not found");
+            return;
         }
+
+        var geolocation = data[0];
+
+        console.log(geolocation);
+        if (geolocation.lat && geolocation.lon) {
+            map.setView([geolocation.lat, geolocation.lon]);
+        }
+        else {
+            $('#geocoder_error').html("Invalid geocoder response");
+        }
+    }
     );
 }
 
@@ -223,7 +224,7 @@ function init() {
     $('#childlessCoeff').val(childlessCoeff);
     $('#regressionConstant').val(regressionConstant);
 
-    $('#geocoder_address').keypress(function (e) {
+    $('#geocoder_address').keypress(function(e) {
         if (e.which == 13) {
             searchForAddress();
         }
@@ -233,10 +234,14 @@ function init() {
     $('#regression_button').click(function(e) {
         $('#regression_knobs').animate({width: 'toggle'});
     });
+    $('#votes_knobs').hide();
+    $('#votes_button').click(function(e) {
+        $('#votes_knobs').animate({width: 'toggle'});
+    });
 
     map = L.map('map').setView(
-        [stateHouseLatitude, stateHouseLongitude], 16
-    );
+            [stateHouseLatitude, stateHouseLongitude], 16
+            );
     map.on('moveend', loadBlocks);
 
     L.tileLayer(tileJSON, {
