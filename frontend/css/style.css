@@ -152,6 +152,17 @@ body > div {
     margin-bottom: 12px;
 }
 
+#vote_counts {
+    position: absolute;
+    float: left;
+    top: 30px;
+    margin-left: 550px;
+    font-family: 'OswaldBook', "Arial Narrow", sans-serif;
+    line-height: 1em;
+    font-size: 1em;
+    width: 360px;
+}
+
 #block_info {
     position: absolute;
     float: left;
