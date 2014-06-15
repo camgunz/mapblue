@@ -1,5 +1,6 @@
 var map = null;
 var geoJSONLayer = null;
+var selectedVotes = 0;
 
 var blackCoeff = 0.4501479;
 var hispanicCoeff = 0.077551;
@@ -7,6 +8,11 @@ var otherRaceCoeff = 0.1358834;
 var unmarriedCoeff = 0.0911239;
 var childlessCoeff = 0.115441;
 var regressionConstant = 0.3638054;
+
+var demColor = '#4488CC';
+var repColor = '#BB4444';
+var strokeColor = '#FFFF00';
+var strokeWeight = 5;
 
 var mapblueAPI = 'http://mapblue.org/lookup'
 //var mapblueAPI = 'http://totaltrash.org/mapblue/lookup'
@@ -127,7 +133,8 @@ function blockStyler(block) {
             fillColor: '#FFFFFF',
             fillOpacity: 0.0,
             stroke: block.properties.clicked,
-            weight: 2
+            color: strokeColor,
+            weight: strokeWeight
         };
     }
 
@@ -144,10 +151,11 @@ function blockStyler(block) {
         }
 
         return {
-            fillColor: '#BB4444',
+            fillColor: repColor,
             fillOpacity: fillOpacity,
             stroke: block.properties.clicked,
-            weight: 2
+            color: strokeColor,
+            weight: strokeWeight
         };
     }
 
@@ -163,10 +171,11 @@ function blockStyler(block) {
     }
 
     return {
-        fillColor: '#4488CC',
+        fillColor: demColor,
         fillOpacity: fillOpacity,
         stroke: block.properties.clicked,
-        weight: 2
+        color: strokeColor,
+        weight: strokeWeight
     };
 }
 
@@ -179,12 +188,22 @@ function updateCoefficients() {
     regressionConstant = parseFloat($('#regressionConstant').val());
 }
 
+function updateSelectedVotes() {
+    $('#vote_counts').html(
+        'Selected Votes: ' +
+        Math.round(selectedVotes) + ' / ' +
+        Math.round(demVoters) + ' (' +
+        Math.round((selectedVotes / demVoters) * 100) + '%)'
+    );
+}
+
 function loadBlocks() {
     $.getJSON(mapblueAPI, getMapCoordinates(), function(data) {
         geoJSONLayer.addData(data);
         resetVoteTotals();
         geoJSONLayer.eachLayer(calculateBlockStatistics);
         geoJSONLayer.setStyle(blockStyler);
+        updateSelectedVotes();
     });
 }
 
@@ -205,9 +224,11 @@ function blockFilter(block) {
 function blockClicked(e) {
     if (e.target.feature.properties.clicked) {
         e.target.feature.properties.clicked = false;
+        selectedVotes -= e.target.feature.properties.democrat;
     }
     else {
         e.target.feature.properties.clicked = true;
+        selectedVotes += e.target.feature.properties.democrat;
     }
 
     e.target.setStyle({
@@ -215,8 +236,10 @@ function blockClicked(e) {
     });
 
     if (!L.Browser.ie && !L.Browser.opera) {
-        layer.bringToFront();
+        e.target.bringToFront();
     }
+
+    updateSelectedVotes();
 }
 
 function blockMousedOver(e) {
