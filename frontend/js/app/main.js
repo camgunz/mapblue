@@ -14,8 +14,8 @@ var repColor = '#BB4444';
 var strokeColor = '#FFFF00';
 var strokeWeight = 5;
 
-var mapblueAPI = 'http://mapblue.org/lookup'
-//var mapblueAPI = 'http://totaltrash.org/mapblue/lookup'
+//var mapblueAPI = 'http://mapblue.org/lookup'
+var mapblueAPI = 'http://totaltrash.org/mapblue/lookup'
 var geocoderAPI = 'http://nominatim.openstreetmap.org/search'
 var stateHouseLatitude = 39.768732;
 var stateHouseLongitude = -86.162612;
@@ -321,7 +321,10 @@ function init() {
 
     $('#votes_knobs').hide();
     $('#votes_button').click(function(e) {
-        $('#votes_knobs').animate({width: 'toggle'});
+        $('#votes_knobs').animate({
+            width: 'toggle',
+            height: 'toggle'
+        });
     });
 
     $('.shade_type_input').click(function(e) {
