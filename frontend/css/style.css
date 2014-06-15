@@ -174,7 +174,8 @@ body > div {
     font: 1em/1.5em 'OswaldBook', 'Arial Narrow', sans-serif;
     float: left;
     top: 30px;
-    width: 125px;
+    min-width: 180px;
+    width: auto;
     padding: 10px;
     border: 1px solid #777;
     border-left: 5px solid #777;
