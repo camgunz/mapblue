@@ -20,7 +20,6 @@ var censusGeocoderAPI =
     'http://geocoding.geo.census.gov/geocoder/locations/onelineaddress'
 var stateHouseLatitude = 39.768732;
 var stateHouseLongitude = -86.162612;
-// var tileJSON = 'https://a.tiles.mapbox.com/v3/examples.map-20v6611k,mapbox.dc-property-values.jsonp?secure';
 var tileJSON = 'http://{s}.tile.stamen.com/terrain/{z}/{x}/{y}.png'
 var tileJSONAttribution =
         'Map tiles by <a href="http://stamen.com">Stamen Design</a>, ' +
@@ -354,7 +353,10 @@ function init() {
 
     $('#votes_knobs').hide();
     $('#votes_button').click(function(e) {
-        $('#votes_knobs').animate({width: 'toggle'});
+        $('#votes_knobs').animate({
+            width: 'toggle',
+            height: 'toggle'
+        });
     });
 
     $('.shade_type_input').click(function(e) {

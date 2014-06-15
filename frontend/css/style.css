@@ -140,38 +140,41 @@ body > div {
 #shade_type_form {
     position: absolute;
     float: left;
-    top: 12px;
+    top: 437px;
+    left: -300px;
     margin-left: 300px;
-    width: 180px;
+    width: 150px;
     font-family: 'OswaldBook', "Arial Narrow", sans-serif;
     line-height: 1em;
     font-size: 1em;
+    padding: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border: 1px solid #777;
+    border-left: 5px solid #777;
+    background: white;
+    color: #333;
 }
 
 #shade_type_form input {
+
     margin-bottom: 12px;
 }
 
 #vote_counts {
-    position: absolute;
-    float: left;
-    top: 30px;
-    margin-left: 550px;
+    position: relative;
+    float: right;
+    top: 470px;
     font-family: 'OswaldBook', "Arial Narrow", sans-serif;
     line-height: 1em;
     font-size: 1em;
-    width: 360px;
-}
-
-#block_info {
-    position: absolute;
-    float: left;
-    width: 400px;
-    height: 210px;
-    padding-top: 20px;
-    margin-left: 300px;
-    padding-left: 20px;
-    border-left: 1px solid #BBB;
+    padding: 10px;
+    padding-top: 13px;
+    padding-bottom: 14px;
+    border: 1px solid #777;
+    border-right: 5px solid #777;
+    background: white;
+    color: #333;
 }
 
 #votes_button {
@@ -191,8 +194,10 @@ body > div {
 }
 
 #votes_knobs {
+    position: absolute;
     float: left;
-    top: 30px;
+    left: -5px;
+    top: 190px;
     max-height: 71px;
 }
 
