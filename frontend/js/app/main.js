@@ -278,9 +278,11 @@ function blockMousedOver(e) {
 }
 
 function handleOpenGeocoderResponse(data) {
-    $('#geocoder_loading').hide();
+    $('#geocoder_submit').removeClass('loading').addClass('search');
+
     if (data.length == 0) {
         $('#geocoder_error').html("Address not found");
+        $('#geocoder_error').show();
         return;
     }
 
@@ -297,7 +299,7 @@ function handleOpenGeocoderResponse(data) {
 
 function searchOpenForAddress() {
     $('#geocoder_error').hide();
-    $('#geocoder_loading').show();
+    $('#geocoder_submit').removeClass('search').addClass('loading');
     $.getJSON(openGeocoderAPI, {
         format: 'json',
         q: $('#geocoder_address').val()
@@ -305,7 +307,7 @@ function searchOpenForAddress() {
 }
 
 function handleCensusGeocoderResponse(data) {
-    $('#geocoder_loading').hide();
+    console.log("Got geocoder response");
     if ((!data) || (!data.addressMatches) || data.addressMatches.length == 0) {
         $('#geocoder_error').html("Address not found");
         $('#geocoder_error').show();
@@ -320,8 +322,8 @@ function handleCensusGeocoderResponse(data) {
 }
 
 function searchCensusForAddress() {
+    console.log("Searching for address " + $('#geocoder_address').val());
     $('#geocoder_error').hide();
-    $('#geocoder_loading').show();
     $.getJSON(censusGeocoderAPI, {
         format: 'jsonp',
         benchmark: 'Public_AR_Current',
@@ -343,8 +345,6 @@ function init() {
         }
     });
     $('#geocoder_submit').click(searchOpenForAddress);
-    $('#geocoder_loading').hide();
-    $('#geocoder_error').hide();
 
     $('#regression_knobs').hide();
     $('#regression_button').click(function(e) {

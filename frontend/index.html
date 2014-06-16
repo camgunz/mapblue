@@ -1,13 +1,12 @@
-<!DOCTYPE html>
-<html>
     <head>
         <meta charset="UTF-8" />
         <title>Map Blue</title>
+        <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
+
         <link rel="stylesheet" href="fonts/fonts.css" type="text/css" />
         <link rel="stylesheet" href="css/style.css" type="text/css" />
         <link rel="stylesheet"
               href="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
-        <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
         </script>
@@ -99,15 +98,12 @@
         <div id="map" class="map"></div>
 
         <div id="content">
-            <div id='branding'>
-                <div id='title'>Map Blue</div>
-                <div id="geocoder">
-                    <input type="text" id="geocoder_address"
-                           placeholder="Search for an address" />
-                    <input type="submit" id="geocoder_submit"/>
-                    <span id="geocoder_loading"></span>
-                    <div id="geocoder_error"></div>
-                </div>
+            <div id='title'>Map Blue</div>
+            <div id="geocoder">
+                <input type="text" id="geocoder_address"
+                       placeholder="Search for an address" />
+                <input type="submit" class="search" id="geocoder_submit"/>
+                <div id="geocoder_error"></div>
             </div>
         </div>
     </body>
