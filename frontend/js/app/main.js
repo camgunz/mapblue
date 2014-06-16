@@ -63,11 +63,6 @@ function addBlockStats(block) {
         if (block.properties.democrat > maxDemVoters) {
             maxDemVoters = block.properties.democrat;
         }
-        /*
-        console.log(block.properties.over18 + " " +
-                    block.properties.demPct + " " +
-                    block.properties.democrat);
-        */
     }
 }
 
@@ -222,7 +217,6 @@ function loadBlocks() {
         var voters = 0;
 
         resetVoteTotals();
-        console.log("Received " + data.features.length + " blocks");
 
         for (var i = 0; i < data.features.length; i++) {
             var feature = data.features[i];
@@ -236,11 +230,6 @@ function loadBlocks() {
                 features.push(feature);
             }
         }
-        console.log("Voters: " + voters);
-        console.log("Dem Voters: " + demVoters);
-        console.log("Dem Voters: " + Math.round(demVoters));
-        console.log("Max Dem Voters: " + maxDemVoters);
-        console.log("Total Voters: " + totalVoters);
 
         data.features = features;
 
