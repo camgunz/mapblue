@@ -126,10 +126,6 @@ body > div {
 #main {
     position: absolute;
     height: 50px;
-    /*
-    width: 50%;
-    overflow: hidden;
-    */
     width: 400px;
     bottom: 50px;
     margin: 0px;
@@ -143,24 +139,6 @@ body > div {
     padding: 0px;
     top: 15px;
     left: 10px;
-    /*
-    font-family: 'OswaldBook', "Arial Narrow", sans-serif;
-    line-height: 1em;
-    */
-    /*
-    float: left;
-    */
-    /*
-    padding-top: 5px;
-    margin-left: 5px;
-    height: 50px;
-    padding: 10px;
-    padding-top: 12px;
-    */
-    /*
-    border-right: 3px solid #BBB;
-    text-align: center;
-    */
 }
 
 #geocoder {
@@ -169,15 +147,6 @@ body > div {
     padding: 0px;
     left: 130px;
     width: 270px;
-    /*
-    margin-top: 10px;
-    margin: 0px;
-    padding: 0px;
-    padding-top: 20px;
-    top: 0px;
-    height: 50px;
-    width: auto;
-    */
 }
 
 #geocoder input[type=text] {
@@ -189,37 +158,12 @@ body > div {
     border-left: 3px solid #BBB;
     padding-left: 15px;
     padding-right: 15px;
-    /*
-    font-size: .85em;
-    color: #333;
-    */
-    /*
-    height: 30px;
-    */
-    /*
-    width: 250px;
-    margin: 0px;
-    padding: 0px;
-    padding-left: 5px;
-    padding-right: 5px;
-    border: 1px solid #CCC;
-    */
 }
 
 #geocoder_submit {
     text-indent: -9999px;
     width: 25px;
     height: 25px;
-    /*
-    width: 31px;
-    height: 31px;
-    */
-    /*
-    margin: 0px;
-    margin-top: 1px;
-    margin-left: 5px;
-    padding: 0px;
-    */
 }
 
 #geocoder_submit.search {
