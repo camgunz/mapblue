@@ -10,9 +10,13 @@ var childlessCoeff = 0.115441;
 var regressionConstant = 0.3638054;
 
 var demColor = '#4488CC';
+var demStrokeColor = '#224466';
 var repColor = '#BB4444';
-var strokeColor = '#FFFF00';
-var strokeWeight = 5;
+var repStrokeColor = '#552222';
+var strokeWeight = 2;
+var selectedStrokeColor = '#FFFF00';
+var selectedStrokeWeight = 5;
+var minOpacity = .15;
 
 var mapblueAPI = 'http://mapblue.org/lookup'
 var openGeocoderAPI = 'http://nominatim.openstreetmap.org/search'
@@ -34,6 +38,7 @@ var demVoters = 0;
 var repVoters = 0;
 var maxRepVoters = 0;
 var maxDemVoters = 0;
+
 var shadeOnVoteCounts = true;
 
 function resetVoteTotals() {
@@ -44,9 +49,29 @@ function resetVoteTotals() {
     maxDemVoters = 0;
 }
 
-function calculateBlockStatistics(layer) {
-    var block = layer.feature;
+function addBlockStats(block) {
+    totalVoters += block.properties.over18;
 
+    if (block.properties.demPct < .50) {
+        repVoters += -(block.properties.democrat);
+        if (-(block.properties.democrat) > maxRepVoters) {
+            maxRepVoters = -(block.properties.democrat);
+        }
+    }
+    else {
+        demVoters += block.properties.democrat;
+        if (block.properties.democrat > maxDemVoters) {
+            maxDemVoters = block.properties.democrat;
+        }
+        /*
+        console.log(block.properties.over18 + " " +
+                    block.properties.demPct + " " +
+                    block.properties.democrat);
+        */
+    }
+}
+
+function calculateBlockStatistics(block) {
     var over18 = block.properties.over18;
     var black = block.properties.black;
     var hispanic = block.properties.hispanic;
@@ -83,21 +108,11 @@ function calculateBlockStatistics(layer) {
             (unmarriedCoeff * block.properties.unmarriedPct) +
             (childlessCoeff * block.properties.childlessPct);
 
-    totalVoters += block.properties.over18;
-
     if (block.properties.demPct < .50) {
         block.properties.democrat = -(over18 * block.properties.demPct);
-        repVoters += -(block.properties.democrat);
-        if (-(block.properties.democrat) > maxRepVoters) {
-            maxRepVoters = -(block.properties.democrat);
-        }
     }
     else {
         block.properties.democrat = over18 * block.properties.demPct;
-        demVoters += block.properties.democrat;
-        if (block.properties.democrat > maxDemVoters) {
-            maxDemVoters = block.properties.democrat;
-        }
     }
 }
 
@@ -122,60 +137,64 @@ function getMapCoordinates() {
 }
 
 function blockStyler(block) {
-    var fillOpacity = 0.0;
+    var fillColor = '#000000';
+    var fillOpacity = 0.1;
+    var stroke = false;
+    var color = '#FFFFFF';
+    var weight = 0;
 
     if (typeof block.properties.clicked == "undefined") {
         block.properties.clicked = false;
     }
 
-    if (block.properties.over18 == 0) {
-        return {
-            fillColor: '#FFFFFF',
-            fillOpacity: 0.0,
-            stroke: block.properties.clicked,
-            color: strokeColor,
-            weight: strokeWeight
-        };
+    if (block.properties.clicked) {
+        color = selectedStrokeColor,
+        weight = selectedStrokeWeight
     }
 
-    if (block.properties.demPct < .5) {
-        if (shadeOnVoteCounts) {
-            fillOpacity = -(block.properties.democrat / maxRepVoters);
+    if (block.properties.over18 > 0) {
+        if (block.properties.demPct < .5) {
+            if (shadeOnVoteCounts) {
+                fillOpacity = -(block.properties.democrat / maxRepVoters);
+            }
+            else {
+                fillOpacity = 1.0 - block.properties.demPct;
+            }
+
+            fillColor = repColor;
+            stroke = true;
+            if (!block.properties.clicked) {
+                color = repStrokeColor;
+                weight = strokeWeight;
+            }
         }
         else {
-            fillOpacity = 1.0 - block.properties.demPct;
+            if (shadeOnVoteCounts) {
+                fillOpacity = block.properties.democrat / maxDemVoters;
+            }
+            else {
+                fillOpacity = block.properties.demPct;
+            }
+
+            fillColor = demColor;
+            stroke = true;
+            if (!block.properties.clicked) {
+                color = demStrokeColor;
+                weight = strokeWeight;
+            }
         }
 
-        if (fillOpacity < .15) {
-            fillOpacity = .15;
+        if (fillOpacity < minOpacity) {
+            fillOpacity = minOpacity;
         }
-
-        return {
-            fillColor: repColor,
-            fillOpacity: fillOpacity,
-            stroke: block.properties.clicked,
-            color: strokeColor,
-            weight: strokeWeight
-        };
-    }
-
-    if (shadeOnVoteCounts) {
-        fillOpacity = block.properties.democrat / maxDemVoters;
-    }
-    else {
-        fillOpacity = block.properties.demPct;
-    }
-
-    if (fillOpacity < .15) {
-        fillOpacity = .15;
     }
 
     return {
-        fillColor: demColor,
+        fillColor: fillColor,
         fillOpacity: fillOpacity,
-        stroke: block.properties.clicked,
-        color: strokeColor,
-        weight: strokeWeight
+        stroke: stroke,
+        color: color,
+        weight: weight
     };
 }
 
@@ -199,9 +218,33 @@ function updateSelectedVotes() {
 
 function loadBlocks() {
     $.getJSON(mapblueAPI, getMapCoordinates(), function(data) {
-        geoJSONLayer.addData(data);
+        var features = [];
+        var voters = 0;
+
         resetVoteTotals();
-        geoJSONLayer.eachLayer(calculateBlockStatistics);
+        console.log("Received " + data.features.length + " blocks");
+
+        for (var i = 0; i < data.features.length; i++) {
+            var feature = data.features[i];
+
+            calculateBlockStatistics(feature);
+            addBlockStats(feature);
+            voters += feature.properties.over18;
+
+            if (blockIDs.indexOf(feature.id) == -1) {
+                blockIDs.push(feature.id);
+                features.push(feature);
+            }
+        }
+        console.log("Voters: " + voters);
+        console.log("Dem Voters: " + demVoters);
+        console.log("Dem Voters: " + Math.round(demVoters));
+        console.log("Max Dem Voters: " + maxDemVoters);
+        console.log("Total Voters: " + totalVoters);
+
+        data.features = features;
+
+        geoJSONLayer.addData(data);
         geoJSONLayer.setStyle(blockStyler);
         updateSelectedVotes();
     });
@@ -209,16 +252,10 @@ function loadBlocks() {
 
 function reloadBlocks(e) {
     updateCoefficients();
-    geoJSONLayer.eachLayer(calculateBlockStatistics);
+    geoJSONLayer.eachLayer(function(layer) {
+        calculateBlockStatistics(layer.feature);
+    });
     geoJSONLayer.setStyle(blockStyler);
-}
-
-function blockFilter(block) {
-    if (blockIDs.indexOf(block.id) == -1) {
-        blockIDs.push(block.id);
-        return true;
-    }
-    return false;
 }
 
 function blockClicked(e) {
@@ -231,9 +268,7 @@ function blockClicked(e) {
         selectedVotes += e.target.feature.properties.democrat;
     }
 
-    e.target.setStyle({
-        stroke: e.target.feature.properties.clicked
-    });
+    geoJSONLayer.setStyle(blockStyler);
 
     if (!L.Browser.ie && !L.Browser.opera) {
         e.target.bringToFront();
@@ -307,7 +342,6 @@ function searchOpenForAddress() {
 }
 
 function handleCensusGeocoderResponse(data) {
-    console.log("Got geocoder response");
     if ((!data) || (!data.addressMatches) || data.addressMatches.length == 0) {
         $('#geocoder_error').html("Address not found");
         $('#geocoder_error').show();
@@ -322,7 +356,6 @@ function handleCensusGeocoderResponse(data) {
 }
 
 function searchCensusForAddress() {
-    console.log("Searching for address " + $('#geocoder_address').val());
     $('#geocoder_error').hide();
     $.getJSON(censusGeocoderAPI, {
         format: 'jsonp',
@@ -387,7 +420,6 @@ function init() {
     map.zoomControl.setPosition('topright');
 
     geoJSONLayer = L.geoJson(null, {
-        filter: blockFilter,
         onEachFeature: function(block, layer) {
             layer.on({
                 click: blockClicked,
