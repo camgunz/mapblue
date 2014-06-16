@@ -361,6 +361,21 @@ function init() {
     $('#childlessCoeff').val(childlessCoeff);
     $('#regressionConstant').val(regressionConstant);
 
+    map = L.map('map').setView(
+        [stateHouseLatitude, stateHouseLongitude], 16
+    );
+    map.on('moveend', loadBlocks);
+
+    L.tileLayer(tileJSON, {
+        attribution: tileJSONAttribution,
+        subdomains: 'abcd',
+        minZoom: 13,
+        maxZoom: 18
+    }).addTo(map);
+
+    map.zoomControl.setPosition('topright');
+    map.attributionControl.setPosition('bottomright');
+
     $('#geocoder_address').keypress(function(e) {
         if (e.which == 13) {
             searchOpenForAddress();
@@ -373,9 +388,9 @@ function init() {
         $('#regression_knobs').animate({width: 'toggle'});
     });
 
-    $('#votes_knobs').hide();
+    $('#votes_knob').hide();
     $('#votes_button').click(function(e) {
-        $('#votes_knobs').animate({
+        $('#votes_knob').animate({
             width: 'toggle',
             height: 'toggle'
         });
@@ -393,20 +408,6 @@ function init() {
         }
         reloadBlocks();
     });
-
-    map = L.map('map').setView(
-        [stateHouseLatitude, stateHouseLongitude], 16
-    );
-    map.on('moveend', loadBlocks);
-
-    L.tileLayer(tileJSON, {
-        attribution: tileJSONAttribution,
-        subdomains: 'abcd',
-        minZoom: 13,
-        maxZoom: 18
-    }).addTo(map);
-
-    map.zoomControl.setPosition('topright');
 
     geoJSONLayer = L.geoJson(null, {
         onEachFeature: function(block, layer) {

@@ -29,6 +29,7 @@ footer, header, hgroup, menu, nav, section {
 body {
     line-height: 1;
     overflow: hidden;
+    margin: 0;
 }
 ol, ul {
     list-style: none;
@@ -100,72 +101,131 @@ body > div {
     position: absolute;
     height: 100%;
     width: 100%;
+    top: 0;
+    left: 0;
     z-index: 0;
 }
 
-#content {
+.apptab {
+    font: 1em/1.5em 'OswaldBook', 'Arial Narrow', sans-serif;
+    color: #333;
+    background: rgba(255, 255, 255, .9);
+    border: 1px solid #777;
+}
+
+.lefttab {
+    float: left;
+    border-left: 5px solid #777;
+}
+
+.righttab {
+    float: right;
+    border-right: 5px solid #777;
+}
+
+#main {
     position: absolute;
-    height: 80px;
-    width: 100%;
-    bottom: 0px;
-    background: rgb(255,255,255); /* old ie */
-    background: rgba(255,255,255,.9);
-    border-bottom: 1px solid #ccc;
-    border-top: 5px solid #333;
-    overflow-y: hidden;
-    z-index: 2;
+    height: 50px;
+    /*
+    width: 50%;
+    overflow: hidden;
+    */
+    width: 400px;
+    bottom: 50px;
+    margin: 0px;
+    padding: 0px;
 }
 
 #title {
+    position: absolute;
+    font-size: 2em;
+    margin: 0px;
+    padding: 0px;
+    top: 15px;
+    left: 10px;
+    /*
     font-family: 'OswaldBook', "Arial Narrow", sans-serif;
     line-height: 1em;
-    font-size: 2em;
-    border-right: 3px solid #BBB;
-    margin: 0px;
-    padding: 12px;
-    padding-top: 26px;
+    */
+    /*
     float: left;
-    height: 100%;
+    */
+    /*
+    padding-top: 5px;
+    margin-left: 5px;
+    height: 50px;
+    padding: 10px;
+    padding-top: 12px;
+    */
+    /*
+    border-right: 3px solid #BBB;
     text-align: center;
-    width: 150px;
+    */
 }
 
 #geocoder {
-    float: left;
+    position: absolute;
+    margin: 0px;
+    padding: 0px;
+    left: 130px;
+    width: 270px;
+    /*
+    margin-top: 10px;
     margin: 0px;
     padding: 0px;
     padding-top: 20px;
-    padding-left: 36px;
-    height: 80px;
+    top: 0px;
+    height: 50px;
     width: auto;
-    min-width: 400px;
+    */
 }
 
 #geocoder input[type=text] {
+    margin: 0px;
+    padding: 0px;
+    height: 25px;
+    width: 243px;
+    border: none;
+    border-left: 3px solid #BBB;
+    padding-left: 15px;
+    padding-right: 15px;
+    /*
     font-size: .85em;
     color: #333;
+    */
+    /*
     height: 30px;
+    */
+    /*
     width: 250px;
     margin: 0px;
     padding: 0px;
     padding-left: 5px;
     padding-right: 5px;
     border: 1px solid #CCC;
+    */
 }
 
 #geocoder_submit {
     text-indent: -9999px;
+    width: 25px;
+    height: 25px;
+    /*
     width: 31px;
     height: 31px;
+    */
+    /*
     margin: 0px;
     margin-top: 1px;
     margin-left: 5px;
     padding: 0px;
+    */
 }
 
 #geocoder_submit.search {
     border: none;
-    background: #2DA0EF url(../img/search.png) no-repeat -0px -0px;
+    background: #2DA0EF url(../img/search.png) no-repeat 50% 50%;
+    background-size: contain;
     cursor: pointer;
 }
 
@@ -180,33 +240,33 @@ body > div {
 #geocoder input[type=submit]:active { background-color: #000; }
 
 #geocoder_error {
-    /* display: none; */
-    top: 1em;
-    color: #e34f4f;
+    color: #E34F4F;
     font-size: 1em;
     line-height: 0em;
-    height: 20px;
-    margin-top: 2px;
-    padding-top: 8px;
+    height: 24px;
+    width: 252px;
+    margin: 0px;
+    padding: 0px;
+    padding-top: 13px;
+    padding-left: 15px;
+    height: 12px;
+    border: none;
+    border-left: 3px solid #BBB;
+    background: rgba(255, 255, 255, .9);
 }
 
 #shade_type_form {
     position: absolute;
-    float: left;
     top: 437px;
     left: -300px;
-    margin-left: 300px;
+
     width: 160px;
-    font-family: 'OswaldBook', "Arial Narrow", sans-serif;
+    margin-left: 300px;
     line-height: 1em;
     font-size: 1em;
     padding: 10px;
     padding-top: 15px;
     padding-bottom: 10px;
-    border: 1px solid #777;
-    border-left: 5px solid #777;
-    background: white;
-    color: #333;
 }
 
 #shade_type_form input {
@@ -215,55 +275,35 @@ body > div {
 
 #vote_counts {
     position: relative;
-    float: right;
     top: 470px;
+    /*
     font-family: 'OswaldBook', "Arial Narrow", sans-serif;
     line-height: 1em;
     font-size: 1em;
+    */
     padding: 10px;
-    padding-top: 13px;
+    padding-top: 14px;
     padding-bottom: 14px;
-    border: 1px solid #777;
-    border-right: 5px solid #777;
-    background: white;
-    color: #333;
+    margin: 0;
 }
 
 #votes_button {
     position: absolute;
-    font: 1em/1.5em 'OswaldBook', 'Arial Narrow', sans-serif;
-    float: left;
     top: 120px;
     width: 125px;
     padding: 10px;
     padding-top: 13px;
     padding-bottom: 14px;
-    border: 1px solid #777;
-    border-left: 5px solid #777;
-    background: white;
-    color: #333;
     text-align: center;
 }
 
-#votes_knobs {
+#votes_knob {
     position: absolute;
-    float: left;
-    left: -5px;
     top: 190px;
-    max-height: 71px;
-}
-
-.votes_knob {
-    font: 1em/1.5em 'OswaldBook', 'Arial Narrow', sans-serif;
-    float: left;
-    top: 30px;
-    min-width: 180px;
-    width: auto;
+    left: -5px;
+    height: 210px;
+    width: 180px;
     padding: 10px;
-    border: 1px solid #777;
-    border-left: 5px solid #777;
-    background: white;
-    color: #333;
     text-align: left;
     margin-left: 5px;
 }
@@ -274,17 +314,11 @@ body > div {
 }
 
 #regression_button {
-    font: 1em/1.5em 'OswaldBook', 'Arial Narrow', sans-serif;
-    float: left;
     top: 30px;
     width: 125px;
     padding: 10px;
     padding-top: 13px;
     padding-bottom: 14px;
-    border: 1px solid #777;
-    border-left: 5px solid #777;
-    background: white;
-    color: #333;
     text-align: center;
 }
 
@@ -312,7 +346,6 @@ body > div {
     background: #2da0ef;
     color: white;
 }
-
 .textbox { 
     border: 0px solid #EEEEEE; 
     border-bottom:1px solid;

@@ -1,5 +1,3 @@
-    <head>
-        <meta charset="UTF-8" />
         <title>Map Blue</title>
         <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
 
@@ -15,10 +13,11 @@
         <script src="js/app/main.js"></script>
     </head>
 
-    <!-- Here we use `data-map` to specify the id of the div the map is in -->
     <body data-map="map">
 
-        <div id="regression_button">Regression Coefficients</div>
+        <div id="regression_button" class="apptab lefttab">
+            Regression Coefficients
+        </div>
         <div id="regression_knobs">
             <div class="regression_knob">
                 <div class="regression_knob_label">African-American</div>
@@ -52,37 +51,35 @@
             </div>
         </div>
 
-        <div id="votes_button">Block Statistics</div>
-        <div id="votes_knobs">
-            <div class="votes_knob">
-                <h2 id="block_name">Block</h2><br/>
-                <label for="block_population">Over 18:</label>
-                <span id="block_population"></span>
-                <br>
-                <label for="block_black">African-Americans:</label>
-                <span id="block_black"></span>
-                <br>
-                <label for="block_hispanic">Hispanics:</label>
-                <span id="block_hispanic"></span>
-                <br>
-                <label for="block_other_race">Other:</label>
-                <span id="block_other_race"></span>
-                <br>
-                <label for="block_white">White:</label>
-                <span id="block_white"></span>
-                <br>
-                <label for="block_unmarried">Unmarried:</label>
-                <span id="block_unmarried"></span>
-                <br>
-                <label for="block_childless">No Children:</label>
-                <span id="block_childless"></span>
-                <br>
-                <label for="block_democratic">Democratic:</label>
-                <span id="block_democratic"></span>
-            </div>
+        <div id="votes_button" class="apptab lefttab">Block Statistics</div>
+        <div id="votes_knob" class="apptab lefttab">
+            <h2 id="block_name">Block</h2><br/>
+            <label for="block_population">Over 18:</label>
+            <span id="block_population"></span>
+            <br>
+            <label for="block_black">African-Americans:</label>
+            <span id="block_black"></span>
+            <br>
+            <label for="block_hispanic">Hispanics:</label>
+            <span id="block_hispanic"></span>
+            <br>
+            <label for="block_other_race">Other:</label>
+            <span id="block_other_race"></span>
+            <br>
+            <label for="block_white">White:</label>
+            <span id="block_white"></span>
+            <br>
+            <label for="block_unmarried">Unmarried:</label>
+            <span id="block_unmarried"></span>
+            <br>
+            <label for="block_childless">No Children:</label>
+            <span id="block_childless"></span>
+            <br>
+            <label for="block_democratic">Democratic:</label>
+            <span id="block_democratic"></span>
         </div>
 
-        <div id="shade_type_form">
+        <div id="shade_type_form" class="apptab lefttab">
             <input class="shade_type_input" type="radio" name="shade_type"
                    value="vote_counts" checked="true"/>
             <label>Display Vote Counts</label>
@@ -93,11 +90,9 @@
             <br />
         </div>
 
-        <div id="vote_counts"></div>
+        <div id="vote_counts" class="apptab righttab"></div>
 
-        <div id="map" class="map"></div>
-
-        <div id="content">
+        <div id="main" class="apptab lefttab">
             <div id='title'>Map Blue</div>
             <div id="geocoder">
                 <input type="text" id="geocoder_address"
@@ -106,6 +101,8 @@
                 <div id="geocoder_error"></div>
             </div>
         </div>
+
+        <div id="map" class="map"></div>
     </body>
 </html>
 
