@@ -203,12 +203,10 @@ function updateCoefficients() {
 }
 
 function updateSelectedVotes() {
-    $('#vote_counts').html(
-        'Selected Votes: ' +
-        Math.round(selectedVotes) + ' / ' +
-        Math.round(demVoters) + ' (' +
-        Math.round((selectedVotes / demVoters) * 100) + '%)'
-    );
+    $('#total_votes').html(Math.round(totalVoters));
+    $('#dem_votes').html(Math.round(demVoters));
+    $('#rep_votes').html(Math.round(repVoters));
+    $('#selected_votes').html(Math.round(selectedVotes));
 }
 
 function loadBlocks() {
@@ -306,6 +304,7 @@ function handleOpenGeocoderResponse(data) {
 
     if (data.length == 0) {
         $('#geocoder_error').html("Address not found");
+        $('#geocoder_error').show();
         return;
     }
 
@@ -316,11 +315,12 @@ function handleOpenGeocoderResponse(data) {
     }
     else {
         $('#geocoder_error').html("Invalid geocoder response");
+        $('#geocoder_error').show();
     }
 }
 
 function searchOpenForAddress() {
-    $('#geocoder_error').html('');
+    $('#geocoder_error').hide();
     $('#geocoder_submit').removeClass('search').addClass('loading');
     $.getJSON(openGeocoderAPI, {
         format: 'json',
@@ -331,6 +331,7 @@ function searchOpenForAddress() {
 function handleCensusGeocoderResponse(data) {
     if ((!data) || (!data.addressMatches) || data.addressMatches.length == 0) {
         $('#geocoder_error').html("Address not found");
+        $('#geocoder_error').show();
         return;
     }
 
@@ -342,7 +343,7 @@ function handleCensusGeocoderResponse(data) {
 }
 
 function searchCensusForAddress() {
-    $('#geocoder_error').html('');
+    $('#geocoder_error').hide();
     $.getJSON(censusGeocoderAPI, {
         format: 'jsonp',
         benchmark: 'Public_AR_Current',
@@ -385,9 +386,9 @@ function init() {
         $('#regression_knobs').animate({width: 'toggle'});
     });
 
-    $('#votes_knob').hide();
-    $('#votes_button').click(function(e) {
-        $('#votes_knob').animate({
+    $('#stats_panel').hide();
+    $('#stats_button').click(function(e) {
+        $('#stats_panel').animate({
             width: 'toggle',
             height: 'toggle'
         });

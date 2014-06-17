@@ -123,47 +123,32 @@ body > div {
     border-right: 5px solid #777;
 }
 
-#main {
-    position: absolute;
-    height: 50px;
-    width: 400px;
-    bottom: 50px;
-    margin: 0px;
-    padding: 0px;
-}
-
-#title {
-    position: absolute;
-    font-size: 2em;
-    margin: 0px;
-    padding: 0px;
-    top: 15px;
-    left: 10px;
-}
-
 #geocoder {
     position: absolute;
+    top: 20px;
+    /*
     margin: 0px;
     padding: 0px;
     left: 130px;
     width: 270px;
+    */
 }
 
 #geocoder input[type=text] {
     margin: 0px;
     padding: 0px;
-    height: 25px;
+    height: 40px;
     width: 243px;
     border: none;
-    border-left: 3px solid #BBB;
     padding-left: 15px;
     padding-right: 15px;
+    outline: none;
 }
 
 #geocoder_submit {
     text-indent: -9999px;
-    width: 25px;
-    height: 25px;
+    width: 40px;
+    height: 40px;
 }
 
 #geocoder_submit.search {
@@ -175,6 +160,7 @@ body > div {
 
 #geocoder_submit.loading {
     background: url(../img/loading.gif) no-repeat 50% 50%;
+    border: none;
     background-size: contain;
     outline: none;
     cursor: default;
@@ -184,26 +170,99 @@ body > div {
 #geocoder input[type=submit]:active { background-color: #000; }
 
 #geocoder_error {
+    display: none;
     color: #E34F4F;
     font-size: 1em;
     line-height: 0em;
-    height: 24px;
-    width: 252px;
+    height: 100%;
     margin: 0px;
     padding: 0px;
-    padding-top: 13px;
-    padding-left: 15px;
-    height: 12px;
-    border: none;
+    border: 1px solid #777;
     border-left: 3px solid #BBB;
     background: rgba(255, 255, 255, .9);
 }
 
+#regression_button {
+    top: 80px;
+    width: 125px;
+    padding: 10px;
+    padding-top: 13px;
+    padding-bottom: 14px;
+    text-align: center;
+}
+
+#regression_button:hover, .regression_knob:hover {
+    background: #2da0ef;
+    color: white;
+}
+
+#regression_knobs {
+    float: left;
+    top: 80px;
+    max-width: 630px;
+    max-height: 71px;
+}
+
+.regression_knob {
+    font: 1em/1.5em 'OswaldBook', 'Arial Narrow', sans-serif;
+    float: left;
+    top: 80px;
+    width: 125px;
+    padding: 10px;
+    border: 1px solid #777;
+    border-left: 5px solid #777;
+    background: white;
+    color: #333;
+    text-align: center;
+    margin-left: 5px;
+    margin-bottom: 5px;
+}
+
+.textbox { 
+    border: 0px solid #EEEEEE; 
+    border-bottom:1px solid;
+    outline:0; 
+    height:25px; 
+    width: 275px; 
+    padding-left:10px; 
+    padding-right:10px; 
+    width: 100px;
+    background: #f8f8f8;
+    text-align: center
+} 
+
+#stats_button {
+    top: 100px;
+    width: 125px;
+    padding: 10px;
+    padding-top: 13px;
+    padding-bottom: 14px;
+    text-align: center;
+}
+
+#stats_panel {
+    /*
+    left: -5px;
+    */
+    position: absolute;
+    right: 0px;
+    top: 160px;
+    height: 210px;
+    width: 180px;
+    padding: 10px;
+    text-align: left;
+    margin-left: 5px;
+}
+
+#stats_button:hover {
+    background: #2da0ef;
+    color: white;
+}
+
 #shade_type_form {
     position: absolute;
-    top: 437px;
+    top: 450px;
     left: -300px;
-
     width: 160px;
     margin-left: 300px;
     line-height: 1em;
@@ -218,91 +277,24 @@ body > div {
 }
 
 #vote_counts {
-    position: relative;
-    top: 470px;
-    /*
-    font-family: 'OswaldBook', "Arial Narrow", sans-serif;
-    line-height: 1em;
-    font-size: 1em;
-    */
+    position: absolute;
+    right: 0;
+    top: 420px;
     padding: 10px;
-    padding-top: 14px;
+    padding-top: 16px;
     padding-bottom: 14px;
     margin: 0;
 }
 
-#votes_button {
+#title {
     position: absolute;
-    top: 120px;
-    width: 125px;
-    padding: 10px;
-    padding-top: 13px;
-    padding-bottom: 14px;
-    text-align: center;
+    font-size: 2em;
+    margin: 0px;
+    padding: 4px;
+    padding-left: 6px;
+    padding-right: 6px;
+    bottom: 0px;
 }
-
-#votes_knob {
-    position: absolute;
-    top: 190px;
-    left: -5px;
-    height: 210px;
-    width: 180px;
-    padding: 10px;
-    text-align: left;
-    margin-left: 5px;
-}
-
-#votes_button:hover {
-    background: #2da0ef;
-    color: white;
-}
-
-#regression_button {
-    top: 30px;
-    width: 125px;
-    padding: 10px;
-    padding-top: 13px;
-    padding-bottom: 14px;
-    text-align: center;
-}
-
-#regression_knobs {
-    float: left;
-    top: 30px;
-    max-height: 71px;
-}
-
-.regression_knob {
-    font: 1em/1.5em 'OswaldBook', 'Arial Narrow', sans-serif;
-    float: left;
-    top: 30px;
-    width: 125px;
-    padding: 10px;
-    border: 1px solid #777;
-    border-left: 5px solid #777;
-    background: white;
-    color: #333;
-    text-align: center;
-    margin-left: 5px;
-}
-
-#regression_button:hover, .regression_knob:hover {
-    background: #2da0ef;
-    color: white;
-}
-.textbox { 
-    border: 0px solid #EEEEEE; 
-    border-bottom:1px solid;
-    outline:0; 
-    height:25px; 
-    width: 275px; 
-    padding-left:10px; 
-    padding-right:10px; 
-    width: 100px;
-    background: #f8f8f8;
-    text-align: center
-} 
-
 
 a.zoomer {
     position: absolute;

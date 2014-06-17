@@ -15,6 +15,15 @@
 
     <body data-map="map">
 
+        <div id="map" class="map"></div>
+
+        <div id="geocoder" class="apptab lefttab">
+            <input type="text" id="geocoder_address"
+                   placeholder="Search for an address" />
+            <input type="submit" class="search" id="geocoder_submit"/>
+            <span id="geocoder_error"></span>
+        </div>
+
         <div id="regression_button" class="apptab lefttab">
             Regression Coefficients
         </div>
@@ -51,8 +60,8 @@
             </div>
         </div>
 
-        <div id="votes_button" class="apptab lefttab">Block Statistics</div>
-        <div id="votes_knob" class="apptab lefttab">
+        <div id="stats_button" class="apptab righttab">Block Statistics</div>
+        <div id="stats_panel" class="apptab righttab">
             <h2 id="block_name">Block</h2><br/>
             <label for="block_population">Over 18:</label>
             <span id="block_population"></span>
@@ -90,19 +99,23 @@
             <br />
         </div>
 
-        <div id="vote_counts" class="apptab righttab"></div>
-
-        <div id="main" class="apptab lefttab">
-            <div id='title'>Map Blue</div>
-            <div id="geocoder">
-                <input type="text" id="geocoder_address"
-                       placeholder="Search for an address" />
-                <input type="submit" class="search" id="geocoder_submit"/>
-                <div id="geocoder_error"></div>
-            </div>
+        <div id="vote_counts" class="apptab righttab">
+            <h2 id="vote_counts_header">Votes</h2>
+            <br>
+            <label for="total_votes">Total:</label>
+            <span id="total_votes"></span>
+            <br>
+            <label for="dem_votes">Democratic:</label>
+            <span id="dem_votes"></span>
+            <br>
+            <label for="rep_votes">Republican:</label>
+            <span id="rep_votes"></span>
+            <br>
+            <label for="selected_votes">Selected:</label>
+            <span id="selected_votes"></span>
+            <br>
         </div>
-
-        <div id="map" class="map"></div>
+        <div id="title" class="apptab lefttab">Map Blue</div>
     </body>
 </html>
 
