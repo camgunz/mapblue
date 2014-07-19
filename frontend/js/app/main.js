@@ -446,6 +446,10 @@ function init() {
         reloadBlocks();
     });
 
+    if (browserIsMobile) {
+        $('#stats_panel').hide();
+    }
+
     geoJSONLayer = L.geoJson(null, {
         onEachFeature: function(block, layer) {
             layer.on({
