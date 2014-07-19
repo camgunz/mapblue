@@ -19,6 +19,7 @@ var selectedStrokeWeight = 5;
 var minOpacity = .15;
 
 var mapblueAPI = 'http://mapblue.org/lookup'
+// mapblueAPI = 'http://totaltrash.org/mapblue/lookup'
 var openGeocoderAPI = 'http://nominatim.openstreetmap.org/search'
 var censusGeocoderAPI =
     'http://geocoding.geo.census.gov/geocoder/locations/onelineaddress'
@@ -31,7 +32,7 @@ var tileJSONAttribution =
         '&mdash; Map data &copy; ' +
         '<a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
         '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
-var blockIDs = [];
+var seenBlockIDs = [];
 
 var totalVoters = 0;
 var demVoters = 0;
@@ -47,6 +48,7 @@ function resetVoteTotals() {
     repVoters = 0;
     maxRepVoters = 0;
     maxDemVoters = 0;
+    selectedVotes = 0;
 }
 
 function addBlockStats(block) {
@@ -131,10 +133,6 @@ function blockStyler(block) {
     var color = '#FFFFFF';
     var weight = 0;
 
-    if (typeof block.properties.clicked == "undefined") {
-        block.properties.clicked = false;
-    }
-
     if (block.properties.clicked) {
         color = selectedStrokeColor,
         weight = selectedStrokeWeight
@@ -206,6 +204,7 @@ function loadBlocks() {
     $.getJSON(mapblueAPI, getMapCoordinates(), function(data) {
         var features = [];
         var voters = 0;
+        var loadedBlockIDs = [];
 
         resetVoteTotals();
 
@@ -215,9 +214,10 @@ function loadBlocks() {
             calculateBlockStatistics(feature);
             addBlockStats(feature);
             voters += feature.properties.over18;
+            loadedBlockIDs.push(feature.id);
 
-            if (blockIDs.indexOf(feature.id) == -1) {
-                blockIDs.push(feature.id);
+            if (seenBlockIDs.indexOf(feature.id) == -1) {
+                seenBlockIDs.push(feature.id);
                 features.push(feature);
             }
         }
@@ -225,6 +225,21 @@ function loadBlocks() {
         data.features = features;
 
         geoJSONLayer.addData(data);
+        geoJSONLayer.eachLayer(function(layer) {
+            var block = layer.feature;
+
+            if (typeof block.properties.clicked == "undefined") {
+                block.properties.clicked = false;
+            }
+            else if (loadedBlockIDs.indexOf(block.id) == -1) {
+                if (block.properties.clicked) {
+                    block.properties.clicked = false;
+                }
+            }
+            else if (block.properties.clicked) {
+                selectedVotes += block.properties.demVotes;
+            }
+        });
         geoJSONLayer.setStyle(blockStyler);
         updateSelectedVotes();
     });
@@ -240,14 +255,13 @@ function reloadBlocks(e) {
 
 function blockClicked(e) {
     if (e.target.feature.properties.clicked) {
-        e.target.feature.properties.clicked = false;
         selectedVotes -= e.target.feature.properties.demVotes;
     }
     else {
-        e.target.feature.properties.clicked = true;
         selectedVotes += e.target.feature.properties.demVotes;
     }
 
+    e.target.feature.properties.clicked = !e.target.feature.properties.clicked;
     geoJSONLayer.setStyle(blockStyler);
 
     if (!L.Browser.ie && !L.Browser.opera) {
