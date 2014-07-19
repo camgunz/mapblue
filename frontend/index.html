@@ -26,6 +26,7 @@
             <span id="geocoder_error"></span>
         </div>
 
+        <!--
         <div id="regression_button" class="apptab lefttab">
             Regression Coefficients
         </div>
@@ -63,15 +64,16 @@
         </div>
 
         <div id="stats_button" class="apptab righttab">Block Statistics</div>
+        -->
         <div id="stats_panel" class="apptab righttab">
             <h2 id="block_name">Block</h2><br/>
             <label for="block_population">Over 18:</label>
             <span id="block_population"></span>
             <br>
-            <label for="block_black">African-Americans:</label>
+            <label for="block_black">African-American:</label>
             <span id="block_black"></span>
             <br>
-            <label for="block_hispanic">Hispanics:</label>
+            <label for="block_hispanic">Hispanic:</label>
             <span id="block_hispanic"></span>
             <br>
             <label for="block_other_race">Other:</label>
@@ -90,6 +92,7 @@
             <span id="block_democratic"></span>
         </div>
 
+        <!--
         <div id="shade_type_form" class="apptab lefttab">
             <input class="shade_type_input" type="radio" name="shade_type"
                    value="vote_counts" checked="true"/>
@@ -100,8 +103,9 @@
             <label>Display Party Strength</label>
             <br />
         </div>
+        -->
 
-        <div id="vote_counts" class="apptab righttab">
+        <div id="vote_counts" class="apptab lefttab">
             <h2 id="vote_counts_header">Votes</h2>
             <br>
             <label for="total_votes">Total:</label>
@@ -117,7 +121,11 @@
             <span id="selected_votes"></span>
             <br>
         </div>
-        <div id="title" class="apptab lefttab">Map Blue</div>
+        <div id="info" class="apptab lefttab">
+            <div id="title">Map Blue</div>
+            <div id="about">About</div>
+            <div id="config">Config</div>
+        </div>
     </body>
 </html>
 

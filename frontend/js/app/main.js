@@ -19,7 +19,7 @@ var selectedStrokeWeight = 5;
 var minOpacity = .15;
 
 var mapblueAPI = 'http://mapblue.org/lookup'
-// mapblueAPI = 'http://totaltrash.org/mapblue/lookup'
+mapblueAPI = 'http://totaltrash.org/mapblue/lookup'
 var openGeocoderAPI = 'http://nominatim.openstreetmap.org/search'
 var censusGeocoderAPI =
     'http://geocoding.geo.census.gov/geocoder/locations/onelineaddress'
@@ -374,7 +374,7 @@ function init() {
     L.tileLayer(tileJSON, {
         attribution: tileJSONAttribution,
         subdomains: 'abcd',
-        minZoom: 13,
+        minZoom: 12,
         maxZoom: 18
     }).addTo(map);
 
@@ -393,7 +393,7 @@ function init() {
         $('#regression_knobs').animate({width: 'toggle'});
     });
 
-    $('#stats_panel').hide();
+    // $('#stats_panel').hide();
     $('#stats_button').click(function(e) {
         $('#stats_panel').animate({
             width: 'toggle',
