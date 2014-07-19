@@ -51,18 +51,15 @@ function resetVoteTotals() {
 
 function addBlockStats(block) {
     totalVoters += block.properties.over18;
+    repVoters += block.properties.repVotes;
+    demVoters += block.properties.demVotes;
 
-    if (block.properties.demPct < .50) {
-        repVoters += -(block.properties.democrat);
-        if (-(block.properties.democrat) > maxRepVoters) {
-            maxRepVoters = -(block.properties.democrat);
-        }
+    if (block.properties.demVotes > maxDemVoters) {
+        maxDemVoters = block.properties.demVotes;
     }
-    else {
-        demVoters += block.properties.democrat;
-        if (block.properties.democrat > maxDemVoters) {
-            maxDemVoters = block.properties.democrat;
-        }
+
+    if (block.properties.repVotes > maxRepVoters) {
+        maxRepVoters = block.properties.repVotes;
     }
 }
 
@@ -85,7 +82,8 @@ function calculateBlockStatistics(block) {
         block.properties.unmarriedPct = 0;
         block.properties.childlessPct = 0;
         block.properties.demPct = 0;
-        block.properties.democrat = 0;
+        block.properties.demVotes = 0;
+        block.properties.repVotes = 0;
         return;
     }
 
@@ -102,13 +100,8 @@ function calculateBlockStatistics(block) {
             (otherRaceCoeff * block.properties.otherRacePct) +
             (unmarriedCoeff * block.properties.unmarriedPct) +
             (childlessCoeff * block.properties.childlessPct);
-
-    if (block.properties.demPct < .50) {
-        block.properties.democrat = -(over18 * block.properties.demPct);
-    }
-    else {
-        block.properties.democrat = over18 * block.properties.demPct;
-    }
+    block.properties.demVotes = over18 * block.properties.demPct;
+    block.properties.repVotes = over18 - block.properties.demVotes;
 }
 
 function buildAPIURL(lat1, lon1, lat2, lon2) {
@@ -150,7 +143,7 @@ function blockStyler(block) {
     if (block.properties.over18 > 0) {
         if (block.properties.demPct < .5) {
             if (shadeOnVoteCounts) {
-                fillOpacity = -(block.properties.democrat / maxRepVoters);
+                fillOpacity = -(block.properties.repVotes / maxRepVoters);
             }
             else {
                 fillOpacity = 1.0 - block.properties.demPct;
@@ -165,7 +158,7 @@ function blockStyler(block) {
         }
         else {
             if (shadeOnVoteCounts) {
-                fillOpacity = block.properties.democrat / maxDemVoters;
+                fillOpacity = block.properties.demVotes / maxDemVoters;
             }
             else {
                 fillOpacity = block.properties.demPct;
@@ -248,11 +241,11 @@ function reloadBlocks(e) {
 function blockClicked(e) {
     if (e.target.feature.properties.clicked) {
         e.target.feature.properties.clicked = false;
-        selectedVotes -= e.target.feature.properties.democrat;
+        selectedVotes -= e.target.feature.properties.demVotes;
     }
     else {
         e.target.feature.properties.clicked = true;
-        selectedVotes += e.target.feature.properties.democrat;
+        selectedVotes += e.target.feature.properties.demVotes;
     }
 
     geoJSONLayer.setStyle(blockStyler);
@@ -295,7 +288,7 @@ function blockMousedOver(e) {
     );
     $('#block_democratic').html(
         Math.round(ps.demPct * 100) +
-        "% (" + Math.round(ps.democrat) + ")"
+        "% (" + Math.round(ps.demVotes) + ")"
     );
 }
 
