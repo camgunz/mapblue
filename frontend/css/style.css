@@ -76,10 +76,23 @@ h2 {
     font-size: 1.5em;
 }
 
-a {
-    color:#369;
-    text-decoration:none;
+h3 {
+    font-family: 'OswaldBook', "Arial Narrow", sans-serif;
+    line-height: 1em;
+    font-size: 1.25em;
 }
+
+h4 {
+    font-family: 'OswaldBook', "Arial Narrow", sans-serif;
+    font-weight: medium;
+}
+
+/*
+a {
+    color: #369;
+    text-decoration: none;
+}
+*/
 
 /* Layout */
 
@@ -238,7 +251,7 @@ body > div {
     position: absolute;
     right: 0px;
     top: 160px;
-    height: 210px;
+    height: 245px;
     width: 180px;
     padding: 10px;
     text-align: left;
@@ -298,6 +311,12 @@ body > div {
     border: 1px solid #777;
     border-right: 1px solid #CCC;
     background: rgba(255, 255, 255, .9);
+}
+
+#title.loading {
+    background: url(../img/loading.gif) no-repeat 50% 50%;
+    background-color: white;
+    background-size: contain;
 }
 
 #about {

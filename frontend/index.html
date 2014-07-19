@@ -29,8 +29,71 @@
             <span id="geocoder_error"></span>
         </div>
 
+        <div id="about_dialog" title="About Map Blue">
+            <h3>About Map Blue</h3>
+            <p>
+                Map Blue was written by Charlie and Joe Gunyon.  It uses data
+                from the 2010 US Census combined with survey data from the
+                General Social Survey to predict likely political orientation
+                based on some very basic demographic information.
+            </p>
+            <h3>What does the map show?</h3>
+            <p>
+                You can configure the map to display the data in two ways.
+                The first (and default) way is to show the net Democratic votes
+                in each block compared to the block with the most net
+                Democratic votes.  For example, if the map is displaying 2
+                blocks, block 1 has 10 Democratic votes and block 2 has 5
+                Democratic votes, block 2 will be half as opaque as block 1.
+                Of course, if there are more Republican votes than Democratic
+                votes, the block will be red.
+            </p>
+            <p>
+                The second way is to show percentages, i.e. this block is 90%
+                Democratic.  This can be more useful as a rough overview, but
+                in general, the first method is much more useful.
+            </p>
+            <h3>Why the 2010 Census?</h3>
+            <p>
+                We use the 2010 Decennial Census because it contains
+                information down to the census block level.  This level is very
+                high-resolution; any higher and we're talking individual
+                addresses.
+            </p>
+            <p>
+                There are some downsides to this approach.  Because of the
+                scale of the Decennial Census, key demographic information,
+                like religion, income and education level, is left out.
+                Additionally, the data can be outdated.
+            </p>
+            <p>
+                We would like to use additional data sources (ACS data, SAVI,
+                etc.) to try and augment the data from the Decennial Census,
+                however, we lack the time and money to do so.
+            </p>
+            <h3>The site seems slow / The site is broken</h3>
+            <p>
+                Map Blue uses some moderately advanced web techniques that
+                require a modern browser.  Your best bet is to use
+                <a href="http://www.google.com/chrome">Google Chrome</a>.
+                Firefox will work, but tends to be slow.
+            </p>
+            <p>
+                You can speed things up by zooming in.  The more blocks Map
+                Blue has to draw, the harder it has to work.  For example,
+                zooming far out in urban areas might draw 50,000 census
+                blocks.  That's a tall order.
+            </p>
+            <p>
+                We've considered drawing census block groups or tracts when
+                zoomed out past certain levels, and then using lower-resolution data
+                (like ACS data).  But, again, we lack the time and money to
+                improve things past this point.
+            </p>
+        </div>
+
         <div id="config_dialog" title="Configuration">
-            <h4>Regression</h4>
+            <h3>Regression</h3>
             <div>
                 <label for="blackCoeff">African-American</label>
                 <input type="text" id="black_coeff"
@@ -63,7 +126,7 @@
                    onKeyUp="reloadBlocks()" />
             </div>
             <hr>
-            <h4>Map Shading</h4>
+            <h3>Map Shading</h3>
             <div>
             <input class="shade_type_input" type="radio" id="shade_type"
                    name="shade_type" value="vote_counts" checked="true"/>
@@ -78,29 +141,46 @@
 
         <div id="stats_panel" class="apptab righttab">
             <h2 id="block_name">Block</h2><br/>
-            <label for="block_population">Over 18:</label>
-            <span id="block_population"></span>
-            <br>
-            <label for="block_black">African-American:</label>
-            <span id="block_black"></span>
-            <br>
-            <label for="block_hispanic">Hispanic:</label>
-            <span id="block_hispanic"></span>
-            <br>
-            <label for="block_other_race">Other:</label>
-            <span id="block_other_race"></span>
-            <br>
-            <label for="block_white">White:</label>
-            <span id="block_white"></span>
-            <br>
-            <label for="block_unmarried">Unmarried:</label>
-            <span id="block_unmarried"></span>
-            <br>
-            <label for="block_childless">No Children:</label>
-            <span id="block_childless"></span>
-            <br>
-            <label for="block_democratic">Democratic:</label>
-            <span id="block_democratic"></span>
+            <div>
+                <label for="block_population">Over 18:</label>
+                <span id="block_population"></span>
+            </div>
+            <div>
+                <label for="block_black">African-American:</label>
+                <span id="block_black"></span>
+            </div>
+            <div>
+                <label for="block_hispanic">Hispanic:</label>
+                <span id="block_hispanic"></span>
+            </div>
+            <div>
+                <label for="block_other_race">Other:</label>
+                <span id="block_other_race"></span>
+            </div>
+            <div>
+                <label for="block_white">White:</label>
+                <span id="block_white"></span>
+            </div>
+            <div>
+                <label for="block_unmarried">Unmarried:</label>
+                <span id="block_unmarried"></span>
+            </div>
+            <div>
+                <label for="block_childless">No Children:</label>
+                <span id="block_childless"></span>
+            </div>
+            <div>
+                <label for="block_democratic">Democratic:</label>
+                <span id="block_democratic"></span>
+            </div>
+            <div>
+                <label for="block_republican">Republican:</label>
+                <span id="block_republican"></span>
+            </div>
+            <div>
+                <label for="block_net">Net Votes:</label>
+                <span id="block_net"></span>
+            </div>
         </div>
 
         <div id="vote_counts" class="apptab lefttab">
@@ -115,7 +195,7 @@
             <label for="rep_votes">Republican:</label>
             <span id="rep_votes"></span>
             <br>
-            <label for="selected_votes">Selected:</label>
+            <label for="selected_votes">Net Selected:</label>
             <span id="selected_votes"></span>
             <br>
         </div>

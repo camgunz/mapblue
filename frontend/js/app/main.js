@@ -32,7 +32,9 @@ var tileJSONAttribution =
         '&mdash; Map data &copy; ' +
         '<a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
         '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
+
 var seenBlockIDs = [];
+var lastCoords = null;
 
 var totalVoters = 0;
 var demVoters = 0;
@@ -56,12 +58,15 @@ function addBlockStats(block) {
     repVoters += block.properties.repVotes;
     demVoters += block.properties.demVotes;
 
-    if (block.properties.demVotes > maxDemVoters) {
-        maxDemVoters = block.properties.demVotes;
+    if (block.properties.netVotes < 0) {
+        if ((-block.properties.netVotes) > maxRepVoters) {
+            maxRepVoters = -block.properties.netVotes;
+        }
     }
-
-    if (block.properties.repVotes > maxRepVoters) {
-        maxRepVoters = block.properties.repVotes;
+    else {
+        if (block.properties.netVotes > maxDemVoters) {
+            maxDemVoters = block.properties.netVotes;
+        }
     }
 }
 
@@ -85,7 +90,9 @@ function calculateBlockStatistics(block) {
         block.properties.childlessPct = 0;
         block.properties.demPct = 0;
         block.properties.demVotes = 0;
+        block.properties.repPct = 0;
         block.properties.repVotes = 0;
+        block.properties.netVotes = 0;
         return;
     }
 
@@ -102,8 +109,11 @@ function calculateBlockStatistics(block) {
             (otherRaceCoeff * block.properties.otherRacePct) +
             (unmarriedCoeff * block.properties.unmarriedPct) +
             (childlessCoeff * block.properties.childlessPct);
+    block.properties.repPct = 1.0 - block.properties.demPct;
     block.properties.demVotes = over18 * block.properties.demPct;
     block.properties.repVotes = over18 - block.properties.demVotes;
+    block.properties.netVotes =
+        block.properties.demVotes - block.properties.repVotes;
 }
 
 function buildAPIURL(lat1, lon1, lat2, lon2) {
@@ -156,7 +166,7 @@ function blockStyler(block) {
         }
         else {
             if (shadeOnVoteCounts) {
-                fillOpacity = block.properties.demVotes / maxDemVoters;
+                fillOpacity = block.properties.netVotes / maxDemVoters;
             }
             else {
                 fillOpacity = block.properties.demPct;
@@ -201,7 +211,25 @@ function updateSelectedVotes() {
 }
 
 function loadBlocks() {
-    $.getJSON(mapblueAPI, getMapCoordinates(), function(data) {
+    var firstTime = lastCoords == null;
+    var coords = getMapCoordinates();
+
+    if ((!firstTime) &&
+        coords.lat1 == lastCoords.lat1 &&
+        coords.lon1 == lastCoords.lon1 &&
+        coords.lat2 == lastCoords.lat2 &&
+        coords.lon2 == lastCoords.lon2) {
+        return;
+    }
+
+    lastCoords = coords;
+
+    if (!firstTime) {
+        $('#title').text('');
+        $('#title').toggleClass('loading');
+    }
+
+    $.getJSON(mapblueAPI, coords, function(data) {
         var features = [];
         var voters = 0;
         var loadedBlockIDs = [];
@@ -237,12 +265,18 @@ function loadBlocks() {
                 }
             }
             else if (block.properties.clicked) {
-                selectedVotes += block.properties.demVotes;
+                selectedVotes += block.properties.netVotes;
             }
         });
         geoJSONLayer.setStyle(blockStyler);
         updateSelectedVotes();
+
+        if (!firstTime) {
+            $('#title').toggleClass('loading');
+            $('#title').text('Map Blue');
+        }
     });
+
 }
 
 function reloadBlocks(e) {
@@ -255,10 +289,10 @@ function reloadBlocks(e) {
 
 function blockClicked(e) {
     if (e.target.feature.properties.clicked) {
-        selectedVotes -= e.target.feature.properties.demVotes;
+        selectedVotes -= e.target.feature.properties.netVotes;
     }
     else {
-        selectedVotes += e.target.feature.properties.demVotes;
+        selectedVotes += e.target.feature.properties.netVotes;
     }
 
     e.target.feature.properties.clicked = !e.target.feature.properties.clicked;
@@ -304,6 +338,11 @@ function blockMousedOver(e) {
         Math.round(ps.demPct * 100) +
         "% (" + Math.round(ps.demVotes) + ")"
     );
+    $('#block_republican').html(
+        Math.round(ps.repPct * 100) +
+        "% (" + Math.round(ps.repVotes) + ")"
+    );
+    $('#block_net').html(Math.round(ps.netVotes));
 }
 
 function handleOpenGeocoderResponse(data) {
@@ -387,6 +426,14 @@ function init() {
         }
     });
     $('#geocoder_submit').click(searchOpenForAddress);
+
+    $('#about_dialog').dialog({
+        autoOpen: false,
+        modal: true,
+        width: 400,
+        height: 300
+    });
+    $('#about').click(function (e) { $('#about_dialog').dialog('open'); });
 
     $('#config_dialog').dialog({
         autoOpen: false,
