@@ -185,12 +185,12 @@ function blockStyler(block) {
 }
 
 function updateCoefficients() {
-    blackCoeff = parseFloat($('#blackCoeff').val());
-    hispanicCoeff = parseFloat($('#hispanicCoeff').val());
-    otherRaceCoeff = parseFloat($('#otherRaceCoeff').val());
-    unmarriedCoeff = parseFloat($('#unmarriedCoeff').val());
-    childlessCoeff = parseFloat($('#childlessCoeff').val());
-    regressionConstant = parseFloat($('#regressionConstant').val());
+    blackCoeff = parseFloat($('#black_coeff').val());
+    hispanicCoeff = parseFloat($('#hispanic_coeff').val());
+    otherRaceCoeff = parseFloat($('#other_race_coeff').val());
+    unmarriedCoeff = parseFloat($('#unmarried_coeff').val());
+    childlessCoeff = parseFloat($('#childless_coeff').val());
+    regressionConstant = parseFloat($('#regression_constant').val());
 }
 
 function updateSelectedVotes() {
@@ -359,12 +359,12 @@ function searchCensusForAddress() {
 }
 
 function init() {
-    $('#blackCoeff').val(blackCoeff);
-    $('#hispanicCoeff').val(hispanicCoeff);
-    $('#otherRaceCoeff').val(otherRaceCoeff);
-    $('#unmarriedCoeff').val(unmarriedCoeff);
-    $('#childlessCoeff').val(childlessCoeff);
-    $('#regressionConstant').val(regressionConstant);
+    $('#black_coeff').val(blackCoeff);
+    $('#hispanic_coeff').val(hispanicCoeff);
+    $('#other_race_coeff').val(otherRaceCoeff);
+    $('#unmarried_coeff').val(unmarriedCoeff);
+    $('#childless_coeff').val(childlessCoeff);
+    $('#regression_constant').val(regressionConstant);
 
     map = L.map('map').setView(
         [stateHouseLatitude, stateHouseLongitude], 16
@@ -388,31 +388,12 @@ function init() {
     });
     $('#geocoder_submit').click(searchOpenForAddress);
 
-    $('#regression_knobs').hide();
-    $('#regression_button').click(function(e) {
-        $('#regression_knobs').animate({width: 'toggle'});
+    $('#config_dialog').dialog({
+        autoOpen: false,
+        modal: true,
+        width: 400
     });
-
-    // $('#stats_panel').hide();
-    $('#stats_button').click(function(e) {
-        $('#stats_panel').animate({
-            width: 'toggle',
-            height: 'toggle'
-        });
-    });
-
-    $('.shade_type_input').click(function(e) {
-        var radioButton = $(e.target);
-        var shadeValue = radioButton.attr('value');
-
-        if (shadeValue == 'vote_counts') {
-            shadeOnVoteCounts = true;
-        }
-        else {
-            shadeOnVoteCounts = false;
-        }
-        reloadBlocks();
-    });
+    $('#config').click(function (e) { $('#config_dialog').dialog('open'); });
 
     geoJSONLayer = L.geoJson(null, {
         onEachFeature: function(block, layer) {

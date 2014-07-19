@@ -4,12 +4,15 @@
         <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
 
         <link rel="stylesheet" href="fonts/fonts.css" type="text/css" />
+        <link rel="stylesheet"
+              href="//code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
         <link rel="stylesheet" href="css/style.css" type="text/css" />
         <link rel="stylesheet"
               href="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
         </script>
+        <script src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
         <script src="//cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
         <script src="js/lib/leaflet-providers.js"></script>
         <script src="js/app/main.js"></script>
@@ -26,45 +29,53 @@
             <span id="geocoder_error"></span>
         </div>
 
-        <!--
-        <div id="regression_button" class="apptab lefttab">
-            Regression Coefficients
-        </div>
-        <div id="regression_knobs">
-            <div class="regression_knob">
-                <div class="regression_knob_label">African-American</div>
-                <input class="textbox" type="text" id="blackCoeff" value=""
-                       onKeyUp="reloadBlocks()" />
+        <div id="config_dialog" title="Configuration">
+            <h4>Regression</h4>
+            <div>
+                <label for="blackCoeff">African-American</label>
+                <input type="text" id="black_coeff"
+                       name="black_coeff" value="" onKeyUp="reloadBlocks()" />
             </div>
-            <div class="regression_knob">
-                <div class="regression_knob_label">Hispanic</div>
-                <input class="textbox" type="text" id="hispanicCoeff" value=""
-                       onKeyUp="reloadBlocks()" />
+            <div>
+            <label for="hispanic_coeff">Hispanic</label>
+            <input type="text" id="hispanic_coeff"
+                   name="hispanic_coeff" value="" onKeyUp="reloadBlocks()" />
             </div>
-            <div class="regression_knob">
-                <div class="regression_knob_label">Other Race</div>
-                <input class="textbox" type="text" id="otherRaceCoeff" value=""
-                       onKeyUp="reloadBlocks()" />
+            <div>
+            <label for="other_race_coeff">Other Race</label>
+            <input type="text" id="other_race_coeff"
+                   name="other_race_coeff" value="" onKeyUp="reloadBlocks()" />
             </div>
-            <div class="regression_knob">
-                <div class="regression_knob_label">Unmarried</div>
-                <input class="textbox" type="text" id="unmarriedCoeff" value=""
-                       onKeyUp="reloadBlocks()" />
+            <div>
+            <label for="unmarried_coeff">Unmarried</label>
+            <input type="text" id="unmarried_coeff"
+                   name="unmarried_coeff" value="" onKeyUp="reloadBlocks()" />
             </div>
-            <div class="regression_knob">
-                <div class="regression_knob_label">No Children</div>
-                <input class="textbox" type="text" id="childlessCoeff" value=""
-                       onKeyUp="reloadBlocks()" />
+            <div>
+            <label for="childless_coeff">No Children</label>
+            <input type="text" id="childless_coeff"
+                   name="childless_coeff" value="" onKeyUp="reloadBlocks()" />
             </div>
-            <div class="regression_knob">
-                <div class="regression_knob_label">Regression Constant</div>
-                <input class="textbox" type="text" id="regressionConstant" value=""
-                       onKeyUp="reloadBlocks()" />
+            <div>
+            <label for="regression_constant">Regression Constant</label>
+            <input type="text" id="regression_constant"
+                   name="regression_constant" value=""
+                   onKeyUp="reloadBlocks()" />
+            </div>
+            <hr>
+            <h4>Map Shading</h4>
+            <div>
+            <input class="shade_type_input" type="radio" id="shade_type"
+                   name="shade_type" value="vote_counts" checked="true"/>
+            <label>Display Vote Counts</label>
+            </div>
+            <div>
+            <input class="shade_type_input" type="radio" id="shade_type"
+                   name="shade_type" value="party_strength"/>
+            <label>Display Party Strength</label>
             </div>
         </div>
 
-        <div id="stats_button" class="apptab righttab">Block Statistics</div>
-        -->
         <div id="stats_panel" class="apptab righttab">
             <h2 id="block_name">Block</h2><br/>
             <label for="block_population">Over 18:</label>
@@ -91,19 +102,6 @@
             <label for="block_democratic">Democratic:</label>
             <span id="block_democratic"></span>
         </div>
-
-        <!--
-        <div id="shade_type_form" class="apptab lefttab">
-            <input class="shade_type_input" type="radio" name="shade_type"
-                   value="vote_counts" checked="true"/>
-            <label>Display Vote Counts</label>
-            <br />
-            <input class="shade_type_input" type="radio" name="shade_type"
-                   value="party_strength"/>
-            <label>Display Party Strength</label>
-            <br />
-        </div>
-        -->
 
         <div id="vote_counts" class="apptab lefttab">
             <h2 id="vote_counts_header">Votes</h2>
