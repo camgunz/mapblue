@@ -441,6 +441,11 @@ function init() {
     });
     $('#config').click(function (e) { $('#config_dialog').dialog('open'); });
 
+    $('.shade_type_input').click(function (e) {
+        shadeOnVoteCounts = ($(e.target).attr('value') == 'vote_counts');
+        reloadBlocks();
+    });
+
     geoJSONLayer = L.geoJson(null, {
         onEachFeature: function(block, layer) {
             layer.on({
