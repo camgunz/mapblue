@@ -19,7 +19,6 @@ var selectedStrokeWeight = 5;
 var minOpacity = .15;
 
 var mapblueAPI = 'http://mapblue.org/lookup'
-mapblueAPI = 'http://totaltrash.org/mapblue/lookup'
 var openGeocoderAPI = 'http://nominatim.openstreetmap.org/search'
 var censusGeocoderAPI =
     'http://geocoding.geo.census.gov/geocoder/locations/onelineaddress'
@@ -27,11 +26,11 @@ var stateHouseLatitude = 39.768732;
 var stateHouseLongitude = -86.162612;
 var tileJSON = 'http://{s}.tile.stamen.com/terrain/{z}/{x}/{y}.png'
 var tileJSONAttribution =
-        'Map tiles by <a href="http://stamen.com">Stamen Design</a>, ' +
-        '<a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> ' +
-        '&mdash; Map data &copy; ' +
-        '<a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-        '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
+    'Map tiles by <a href="http://stamen.com">Stamen Design</a>, ' +
+    '<a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> ' +
+    '&mdash; Map data &copy; ' +
+    '<a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+    '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
 
 var seenBlockIDs = [];
 var lastCoords = null;
